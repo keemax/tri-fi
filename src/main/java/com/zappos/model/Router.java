@@ -4,8 +4,8 @@ package com.zappos.model;
  * Created by maxkeene on 6/11/14.
  */
 public class Router {
-    String id;
-    Double strength;
+    private String id;
+    private Double strength;
 
     public String getId() {
         return id;

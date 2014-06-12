@@ -5,9 +5,9 @@ import java.util.List;
 /**
  * Created by maxkeene on 6/11/14.
  */
-public class LocationProfile {
-    String id;
-    List<Router> routers;
+public class RouterSignature {
+    private String id;
+    private List<Router> routers;
 
     public String getId() {
         return id;
