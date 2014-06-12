@@ -1,13 +1,14 @@
 package com.zappos.model;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by maxkeene on 6/11/14.
  */
 public class RouterSignature {
     private String id;
-    private List<Router> routers;
+    private Map<String, Double> routers;
 
     public String getId() {
         return id;
@@ -17,11 +18,11 @@ public class RouterSignature {
         this.id = id;
     }
 
-    public List<Router> getRouters() {
+    public Map<String, Double> getRouters() {
         return routers;
     }
 
-    public void setRouters(List<Router> routers) {
+    public void setRouters(Map<String, Double> routers) {
         this.routers = routers;
     }
 

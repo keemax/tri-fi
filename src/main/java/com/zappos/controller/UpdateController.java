@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,6 +24,9 @@ public class UpdateController {
     @Autowired
     private AmazonDynamoDBAsync dynamoDBAsyncClient;
 
+    @Resource(name = "knownRouters")
+    private List<String> knownRouters;
+
     private static final String locationUpdateTable = "locationUpdates";
 
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = "application/json")
@@ -30,6 +35,13 @@ public class UpdateController {
         Map<String, AttributeValue> item = new HashMap<String, AttributeValue>();
         item.put("id", new AttributeValue().withS(routerSignature.getId()));
         item.put("timestamp", new AttributeValue().withN(String.valueOf(System.currentTimeMillis())));
+
+        Map<String, Double> routers = routerSignature.getRouters();
+        for (String router : knownRouters) {
+            Double strength = routers.get(router) == null ? -100 : routers.get(router);
+            item.put(router, new AttributeValue().withN(String.valueOf(strength)));
+        }
+
         PutItemRequest putItemRequest = new PutItemRequest()
                 .withTableName(locationUpdateTable)
                 .withItem(item);

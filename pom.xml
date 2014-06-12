@@ -30,6 +30,11 @@
             <artifactId>aws-java-sdk</artifactId>
             <version>1.7.12</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-prediction</artifactId>
+            <version>v1.6-rev40-1.18.0-rc</version>
+        </dependency>
     </dependencies>
 
     <properties>

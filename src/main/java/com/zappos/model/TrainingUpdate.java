@@ -1,11 +1,16 @@
 package com.zappos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Created by maxkeene on 6/12/14.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TrainingUpdate {
     private Location location;
     private RouterSignature routerSignature;
+    private int version;
 
     public Location getLocation() {
         return location;
@@ -21,5 +26,13 @@ public class TrainingUpdate {
 
     public void setRouterSignature(RouterSignature routerSignature) {
         this.routerSignature = routerSignature;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 }
