@@ -1,6 +1,7 @@
 package com.zappos.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -10,9 +11,8 @@ import org.springframework.web.bind.annotation.*;
 public class HomeController {
 
     @RequestMapping("/")
-    @ResponseBody
-    public String index() {
-        return "TRI-FI HOME PAGE";
+    public String index(Model model) {
+        return "index";
     }
 
 

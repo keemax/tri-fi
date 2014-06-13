@@ -7,6 +7,7 @@ public class Location {
     private Integer floor;
     private Double x;
     private Double y;
+    private String timestamp;
 
     public Integer getFloor() {
         return floor;
@@ -30,5 +31,13 @@ public class Location {
 
     public void setY(Double y) {
         this.y = y;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 }

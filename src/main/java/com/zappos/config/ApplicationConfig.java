@@ -6,6 +6,8 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClient;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.zappos.dao.EmployeeDAO;
+import com.zappos.dao.LocationDAO;
 import com.zappos.dao.TrainingDAO;
 import com.zappos.prediction.Predictor;
 import com.zappos.prediction.Trainer;
@@ -53,6 +55,16 @@ public class ApplicationConfig {
     @Bean
     public TrainingDAO trainingDAO() {
         return new TrainingDAO();
+    }
+
+    @Bean
+    public LocationDAO locationDAO() {
+        return new LocationDAO();
+    }
+
+    @Bean
+    public EmployeeDAO employeeDAO() {
+        return new EmployeeDAO();
     }
 
     @Bean
