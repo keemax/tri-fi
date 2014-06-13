@@ -55,14 +55,14 @@ public class CsvController {
             }
             scanRequest.setExclusiveStartKey(lastEvaluated);
             result = dynamoDBAsync.scan(scanRequest);
-        }
-        while (lastEvaluated != null);
+        } while (lastEvaluated != null);
 
         String csvString = StringUtils.join(rows, "\n");
         byte[] stringBytes = csvString.getBytes();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("text","csv"));
-        httpHeaders.set("Content-Disposition", "attachment; filename=trainingSet.csv");
+        httpHeaders.set("Content-Disposition", "attachment; filename=trainingSet-" +
+                key + "-" + (System.currentTimeMillis() / 1000) + ".csv");
         httpHeaders.setContentLength(stringBytes.length);
         return new HttpEntity<byte[]>(stringBytes, httpHeaders);
     }

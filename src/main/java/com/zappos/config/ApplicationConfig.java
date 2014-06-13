@@ -5,15 +5,15 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClient;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.zappos.dao.TrainingDAO;
+import com.zappos.prediction.Predictor;
 import com.zappos.prediction.Trainer;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,12 +29,26 @@ public class ApplicationConfig {
     @Value("${aws.secret}")
     private String secretKey;
 
+    @Value("${google.clientId}")
+    private String googleAccessKey;
+
+    @Value("${google.secret}")
+    private String googleSecretKey;
+
+
     @Bean
     public AmazonDynamoDBAsync amazonDynamoDB() {
         AmazonDynamoDBAsyncClient client = new AmazonDynamoDBAsyncClient(new BasicAWSCredentials(accessKey, secretKey));
         client.setRegion(Region.getRegion(Regions.US_WEST_2));
         return client;
     }
+
+
+    @Bean
+    public Predictor predictor() {
+        return new Predictor();
+    }
+
 
     @Bean
     public TrainingDAO trainingDAO() {
