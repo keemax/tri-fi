@@ -5,6 +5,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
 import com.zappos.dao.TrainingDAO;
 import com.zappos.model.Location;
+import com.zappos.model.RouterDescription;
 import com.zappos.model.RouterSignature;
 import com.zappos.model.TrainingUpdate;
 import com.zappos.prediction.Trainer;
@@ -43,15 +44,17 @@ public class TrainController {
                 update.getLocation().getY() == null ||
                 update.getRouterSignature() == null ||
                 update.getRouterSignature().getId() == null ||
-                update.getRouterSignature().getRouters() == null) {
+                update.getRouterSignature().getRouters() == null ||
+                update.getRouterSignature().getRouters().isEmpty()) {
             return "no nulls plz";
         }
 
         trainingDAO.storeFloor(update);
         trainingDAO.storeX(update);
         trainingDAO.storeY(update);
+        trainingDAO.storeRouters(update);
 
-        Map<String, Double> routers = update.getRouterSignature().getRouters();
+        Map<String, RouterDescription> routers = update.getRouterSignature().getRouters();
         Location location = update.getLocation();
         trainer.train(location.getFloor().doubleValue(), routers, floorSet);
         trainer.train(location.getX(), routers, x4Set);

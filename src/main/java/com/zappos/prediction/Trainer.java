@@ -1,5 +1,8 @@
 package com.zappos.prediction;
 
+import com.zappos.util.TriFiConstants;
+import com.zappos.model.RouterDescription;
+
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,11 +15,12 @@ public class Trainer {
     @Resource(name = "knownRouters")
     private List<String> knownRouters;
 
-    public void train(Double value, Map<String, Double> routers, String setName) {
+    public void train(Double value, Map<String, RouterDescription> routers, String setName) {
         List<Double> csvRow = new ArrayList<Double>();
         csvRow.add(value);
         for (String router : knownRouters) {
-            Double entry = routers.get(router) == null ? -100 : routers.get(router);
+            Double entry = routers.get(router).getStrength() == null ? TriFiConstants.DEFAULT_NETWORK : routers.get
+                    (router).getStrength();
             csvRow.add(entry);
         }
     }

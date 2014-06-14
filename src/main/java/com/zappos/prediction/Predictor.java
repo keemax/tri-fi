@@ -39,7 +39,7 @@ public class Predictor {
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
 
-    public String predict(List<Object> values) throws IOException, GeneralSecurityException {
+    public String predict(List<Object> values, String model) throws IOException, GeneralSecurityException {
         httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         // check for valid setup
         if (serviceAccountEmail.startsWith("Enter ")) {
@@ -66,7 +66,7 @@ public class Predictor {
         Input.InputInput inputInput = new Input.InputInput();
         inputInput.setCsvInstance(values);
         input.setInput(inputInput);
-        Output output = prediction.trainedmodels().predict("tri-fi", "x-4-1", input).execute();
+        Output output = prediction.trainedmodels().predict("tri-fi", model, input).execute();
         return output.getOutputValue();
     }
 

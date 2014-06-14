@@ -3,14 +3,13 @@ package com.zappos.controller;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
+import com.zappos.model.RouterDescription;
 import com.zappos.model.RouterSignature;
 import com.zappos.prediction.Predictor;
+import com.zappos.util.TriFiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -43,9 +42,9 @@ public class UpdateController {
         item.put("id", new AttributeValue().withS(routerSignature.getId()));
         item.put("timestamp", new AttributeValue().withN(String.valueOf(System.currentTimeMillis())));
 
-        Map<String, Double> routers = routerSignature.getRouters();
+        Map<String, RouterDescription> routers = routerSignature.getRouters();
         for (String router : knownRouters) {
-            Double strength = routers.get(router) == null ? -100 : routers.get(router);
+            Double strength = TriFiUtils.getSignal(routers.get(router));
             item.put(router, new AttributeValue().withN(String.valueOf(strength)));
         }
 
@@ -56,15 +55,19 @@ public class UpdateController {
         return "sweet request bro";
     }
 
-    @RequestMapping("/predict")
+    @RequestMapping("/predict/{model}")
     @ResponseBody
-    public String predict(@RequestBody RouterSignature routerSignature) throws IOException, GeneralSecurityException {
-        Map<String, Double> routers = routerSignature.getRouters();
+    public String predict(@PathVariable("model") String model, @RequestBody RouterSignature routerSignature) throws
+            IOException,
+            GeneralSecurityException {
+        Map<String, RouterDescription> routers = routerSignature.getRouters();
         List<Object> input = new ArrayList<Object>();
         for (String router : knownRouters) {
-            input.add(routers.get(router) == null ? -100 : routers.get(router));
+            input.add(TriFiUtils.getSignal(routers.get(router)));
         }
         System.out.println(input);
-        return predictor.predict(input);
+        return "x = " + predictor.predict(input, "x-" + model) + " y = " + predictor.predict(input,
+                "y-" + model) + " floor = " + predictor.predict(input, "floor-" + model);
+
     }
 }
