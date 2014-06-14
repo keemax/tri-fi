@@ -5,6 +5,7 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClient;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.zappos.dao.EmployeeDAO;
 import com.zappos.dao.LocationDAO;
@@ -13,6 +14,7 @@ import com.zappos.prediction.Predictor;
 import com.zappos.prediction.Trainer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
@@ -45,6 +47,12 @@ public class ApplicationConfig {
         return client;
     }
 
+    @Bean
+    public DynamoDBMapper dynamoDBMapper() {
+        return new DynamoDBMapper(amazonDynamoDB());
+    }
+
+
 
     @Bean
     public Predictor predictor() {
@@ -74,14 +82,36 @@ public class ApplicationConfig {
 
     @Bean(name = "knownRouters")
     public List<String> knownRouters() {
-        String[] strArray =  new String [] {"00:15:ff:7b:32:8b",
+
+        String[] choiceMac = new String [] {
+                "e0:1c:41:04:88:e9",    // 4th floor - zMobile
+                "e0:1c:41:04:89:69",
+                "e0:1c:41:04:7d:e9",
+                "e0:1c:41:04:7d:95",
+                "e0:1c:41:04:89:a9",
+                "e0:1c:41:04:89:29",
+                "24:de:c6:a5:f0:38",    // 4th floor - wpa2
+                "24:de:c6:a5:e2:a8",
+                "e0:1c:41:04:96:69",     // 3rd floor - zMobile
+                "08:ea:44:9c:ff:e9",
+                "08:ea:44:9c:fe:e9",
+                "08:ea:44:9c:ff:a9",
+                "08:ea:44:9c:ff:55",
+                "08:ea:44:9c:ff:29"
+
+
+
+        };
+
+        String[] strArray =  new String [] {
+               // "00:15:ff:7b:32:8b",
                 "08:ea:44:90:bb:14",
                 "08:ea:44:90:bb:15",
                 "08:ea:44:90:bb:28",
                 "08:ea:44:90:bb:29",
                 "08:ea:44:90:bb:2a",
                 "08:ea:44:90:ca:54",
-                "08:ea:44:90:ca:55",
+               // "08:ea:44:90:ca:55",
                 "08:ea:44:90:ca:68",
                 "08:ea:44:90:ca:69",
                 "08:ea:44:90:ca:6a",
@@ -178,11 +208,11 @@ public class ApplicationConfig {
                 "24:de:c6:a5:fd:68",
                 "24:de:c6:a5:fd:69",
                 "24:de:c6:a5:fd:6a",
-                "24:de:c6:a5:fd:80",
-                "24:de:c6:a5:fd:81",
-                "24:de:c6:a5:fd:88",
-                "24:de:c6:a5:fd:89",
-                "24:de:c6:a5:fd:8a",
+               // "24:de:c6:a5:fd:80",
+               // "24:de:c6:a5:fd:81",
+               // "24:de:c6:a5:fd:88",
+               // "24:de:c6:a5:fd:89",
+               // "24:de:c6:a5:fd:8a",
                 "24:de:c6:a5:fd:d0",
                 "24:de:c6:a5:fd:d1",
                 "24:de:c6:a5:fd:d2",
@@ -197,30 +227,30 @@ public class ApplicationConfig {
                 "24:de:c6:a6:03:d8",
                 "24:de:c6:a6:03:d9",
                 "24:de:c6:a6:03:da",
-                "24:de:c6:a6:03:f0",
-                "24:de:c6:a6:03:f1",
-                "24:de:c6:a6:03:f2",
-                "24:de:c6:a6:03:f8",
-                "24:de:c6:a6:03:f9",
-                "24:de:c6:a6:03:fa",
+               // "24:de:c6:a6:03:f0",
+               // "24:de:c6:a6:03:f1",
+               // "24:de:c6:a6:03:f2",
+               // "24:de:c6:a6:03:f8",
+               // "24:de:c6:a6:03:f9",
+               // "24:de:c6:a6:03:fa",
                 "24:de:c6:a6:04:10",
-                "24:de:c6:a6:04:12",
+               // "24:de:c6:a6:04:12",
                 "24:de:c6:a6:04:18",
                 "24:de:c6:a6:04:19",
-                "24:de:c6:a6:04:20",
-                "24:de:c6:a6:04:28",
-                "24:de:c6:a6:04:29",
-                "24:de:c6:a6:04:2a",
-                "24:de:c6:a6:04:78",
-                "24:de:c6:a6:04:79",
-                "24:de:c6:a6:04:7a",
+               // "24:de:c6:a6:04:20",
+               // "24:de:c6:a6:04:28",
+               // "24:de:c6:a6:04:29",
+               // "24:de:c6:a6:04:2a",
+               // "24:de:c6:a6:04:78",
+               // "24:de:c6:a6:04:79",
+               // "24:de:c6:a6:04:7a",
                 "24:de:c6:a6:05:10",
                 "24:de:c6:a6:05:18",
                 "24:de:c6:a6:05:19",
                 "24:de:c6:a6:05:1a",
-                "24:de:c6:a6:07:00",
-                "24:de:c6:a6:07:01",
-                "24:de:c6:a6:07:02",
+               // "24:de:c6:a6:07:00",
+               // "24:de:c6:a6:07:01",
+               // "24:de:c6:a6:07:02",
                 "24:de:c6:a6:07:b0",
                 "24:de:c6:a6:07:b8",
                 "24:de:c6:a6:07:b9",
@@ -234,10 +264,10 @@ public class ApplicationConfig {
                 "24:de:c6:a6:08:38",
                 "24:de:c6:a6:08:39",
                 "24:de:c6:a6:08:3a",
-                "24:de:c6:a6:08:61",
-                "24:de:c6:a6:08:68",
-                "24:de:c6:a6:08:69",
-                "24:de:c6:a6:08:6a",
+               // "24:de:c6:a6:08:61",
+               // "24:de:c6:a6:08:68",
+               // "24:de:c6:a6:08:69",
+               // "24:de:c6:a6:08:6a",
                 "24:de:c6:a6:08:78",
                 "24:de:c6:a6:08:79",
                 "24:de:c6:a6:08:7a",
@@ -248,7 +278,7 @@ public class ApplicationConfig {
                 "24:de:c6:a6:08:f9",
                 "24:de:c6:a6:08:fa",
                 "24:de:c6:a6:09:00",
-                "24:de:c6:a6:09:01",
+               // "24:de:c6:a6:09:01",
                 "24:de:c6:a6:09:02",
                 "24:de:c6:a6:09:08",
                 "24:de:c6:a6:09:09",
@@ -269,7 +299,7 @@ public class ApplicationConfig {
                 "24:de:c6:a6:0a:0a",
                 "24:de:c6:a6:a7:e0",
                 "24:de:c6:a6:a7:e1",
-                "24:de:c6:a6:a7:e2",
+               // "24:de:c6:a6:a7:e2",
                 "d8:c7:c8:14:80:98",
                 "e0:1c:41:04:77:14",
                 "e0:1c:41:04:77:15",
@@ -349,40 +379,41 @@ public class ApplicationConfig {
                 "e0:1c:41:04:89:a9",
                 "e0:1c:41:04:89:aa",
                 "e0:1c:41:04:89:ab",
-                "e0:1c:41:04:92:d4",
-                "e0:1c:41:04:92:d5",
-                "e0:1c:41:04:92:e9",
-                "e0:1c:41:04:92:ea",
+               // "e0:1c:41:04:92:d4",
+               // "e0:1c:41:04:92:d5",
+               // "e0:1c:41:04:92:e9",
+               // "e0:1c:41:04:92:ea",
                 "e0:1c:41:04:96:68",
                 "e0:1c:41:04:96:69",
                 "e0:1c:41:04:96:6a",
-                "e0:1c:41:04:97:e8",
-                "e0:1c:41:04:97:e9",
-                "e0:1c:41:04:97:ea",
-                "e0:1c:41:04:98:e8",
-                "e0:1c:41:04:98:e9",
-                "e0:1c:41:04:98:ea",
-                "e0:1c:41:04:99:28",
-                "e0:1c:41:04:99:29",
-                "e0:1c:41:04:99:2a",
-                "e0:1c:41:04:99:68",
-                "e0:1c:41:04:99:69",
-                "e0:1c:41:04:99:6a",
-                "e0:1c:41:04:99:d4",
-                "e0:1c:41:04:99:d5",
-                "e0:1c:41:04:99:e8",
-                "e0:1c:41:04:99:e9",
-                "e0:1c:41:04:99:ea",
-                "e0:1c:41:04:9a:a8",
-                "e0:1c:41:04:9a:a9",
-                "e0:1c:41:04:9a:aa",
-                "e0:1c:41:04:9a:e8",
-                "e0:1c:41:04:9a:e9",
-                "e0:1c:41:04:9a:ea",
-                "e0:1c:41:04:a9:28",
-                "e0:1c:41:04:a9:e8",
-                "e0:1c:41:04:a9:e9",
-                "e0:1c:41:04:a9:ea"};
+//                "e0:1c:41:04:97:e8",
+//                "e0:1c:41:04:97:e9",
+//                "e0:1c:41:04:97:ea",
+//                "e0:1c:41:04:98:e8",
+//                "e0:1c:41:04:98:e9",
+//                "e0:1c:41:04:98:ea",
+//                "e0:1c:41:04:99:28",
+//                "e0:1c:41:04:99:29",
+//                "e0:1c:41:04:99:2a",
+//                "e0:1c:41:04:99:68",
+//                "e0:1c:41:04:99:69",
+//                "e0:1c:41:04:99:6a",
+//                "e0:1c:41:04:99:d4",
+//                "e0:1c:41:04:99:d5",
+//                "e0:1c:41:04:99:e8",
+//                "e0:1c:41:04:99:e9",
+//                "e0:1c:41:04:99:ea",
+//                "e0:1c:41:04:9a:a8",
+//                "e0:1c:41:04:9a:a9",
+//                "e0:1c:41:04:9a:aa",
+//                "e0:1c:41:04:9a:e8",
+//                "e0:1c:41:04:9a:e9",
+//                "e0:1c:41:04:9a:ea",
+//                "e0:1c:41:04:a9:28",
+//                "e0:1c:41:04:a9:e8",
+//                "e0:1c:41:04:a9:e9",
+//                "e0:1c:41:04:a9:ea"
+        };
         return Arrays.asList(strArray);
     }
 }

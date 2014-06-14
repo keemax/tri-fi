@@ -3,3 +3,4 @@ target
 tri-fi.iml
 src/main/resources/spring.properties
 key.p12
+.DS_Store
