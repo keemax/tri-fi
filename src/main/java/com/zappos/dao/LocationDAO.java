@@ -98,7 +98,7 @@ public class LocationDAO {
 
     private Location mapEntryToLocation(Map<String, AttributeValue> item) {
         Location location = new Location();
-        location.setFloor(Integer.valueOf(item.get("floor").getN()));
+        location.setFloor(Double.valueOf(item.get("floor").getN()));
         location.setX(Double.valueOf(item.get("x").getN()));
         location.setY(Double.valueOf(item.get("y").getN()));
         location.setTimestamp(item.get("timestamp").getN());
