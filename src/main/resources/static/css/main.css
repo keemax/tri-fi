@@ -1,0 +1,36 @@
+body {
+    background-color: #9AD7FC;
+    font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+}
+
+#map {
+    background: url('/images/floor_grid.png');
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    width:75%;
+    margin: 20px;
+    float: left;
+    box-shadow: rgb(40, 40, 40) 0 0 30px;
+}
+#menu {
+    float: left;
+    width: 20%;
+    height: 500px;
+    margin-top: 20px;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: rgb(40, 40, 40) 0 0 30px;
+}
+
+#search_controls {
+    margin: 20px;
+    text-align: center;
+}
+
+#search {
+    font-size: 16px;
+    padding: 5px;
+    width: 90%;
+}

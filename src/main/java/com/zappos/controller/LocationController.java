@@ -34,4 +34,9 @@ public class LocationController {
             return locationDAO.getLocationsInTimeRange(id, start, end);
         }
     }
+
+    @RequestMapping("/find/last")
+    public Location findPersonsLastLocation(@RequestParam("id") String id) {
+        return locationDAO.getLastLocation(id);
+    }
 }

@@ -31,6 +31,24 @@ public class LocationDAO {
         return scanLocations(queryConditions);
     }
 
+    public Location getLastLocation(String id) {
+        Map<String, Condition> queryConditions = new HashMap<String, Condition>();
+        queryConditions.put("id", new Condition().withComparisonOperator(ComparisonOperator.EQ)
+                .withAttributeValueList(new AttributeValue().withS(id)));
+        QueryRequest locationQuery = new QueryRequest().withTableName(LOCATION_TABLE)
+                .withKeyConditions(queryConditions)
+                .withScanIndexForward(false);
+
+        QueryResult result = dynamoDBAsync.query(locationQuery);
+        if (result.getItems().isEmpty()) {
+            return null;
+        } else {
+            return mapEntryToLocation(result.getItems().get(0));
+        }
+
+
+    }
+
     public List<Location> getLocationsInBeforeDate(String id, String until) {
         Map<String, Condition> queryConditions = new HashMap<String, Condition>();
         queryConditions.put("id", new Condition().withComparisonOperator(ComparisonOperator.EQ)
@@ -70,16 +88,20 @@ public class LocationDAO {
         do {
             List<Map<String, AttributeValue>> items = result.getItems();
             for (Map<String, AttributeValue> item : items) {
-                Location location = new Location();
-                location.setFloor(Integer.valueOf(item.get("floor").getN()));
-                location.setX(Double.valueOf(item.get("x").getN()));
-                location.setY(Double.valueOf(item.get("y").getN()));
-                location.setTimestamp(item.get("timestamp").getN());
-                results.add(location);
+                results.add(mapEntryToLocation(item));
             }
             locationQuery.setExclusiveStartKey(lastEvaluated);
             result = dynamoDBAsync.query(locationQuery);
         } while (lastEvaluated != null);
         return results;
+    }
+
+    private Location mapEntryToLocation(Map<String, AttributeValue> item) {
+        Location location = new Location();
+        location.setFloor(Integer.valueOf(item.get("floor").getN()));
+        location.setX(Double.valueOf(item.get("x").getN()));
+        location.setY(Double.valueOf(item.get("y").getN()));
+        location.setTimestamp(item.get("timestamp").getN());
+        return location;
     }
 }
