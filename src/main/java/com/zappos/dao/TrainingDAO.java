@@ -3,6 +3,7 @@ package com.zappos.dao;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
+import com.zappos.model.RouterDescription;
 import com.zappos.model.TrainingUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,6 +28,7 @@ public class TrainingDAO {
                 update.getRouterSignature().getRouters(),
                 update.getVersion(),
                 trainingSetFloor);
+
     }
     public void storeX(TrainingUpdate update) {
         String tableName = trainingSetX + update.getLocation().getFloor();
@@ -45,14 +47,30 @@ public class TrainingDAO {
                 tableName);
     }
 
-    private void storeTrainingExample(String valueName, Double value, Map<String, Double> routers, int version, String tableName) {
+    public void storeRouters(TrainingUpdate update) {
+        storeRouterProfile(update.getRouterSignature().getRouters());
+    }
+
+    private void storeRouterProfile(Map<String, RouterDescription> routers) {
+
+        for(String router : routers.keySet()) {
+            Map<String, AttributeValue> item = new HashMap<String, AttributeValue>();
+            item.put("id", new AttributeValue().withS(router));
+            item.put("band", new AttributeValue().withN(String.valueOf(routers.get(router).getBand())));
+            putItemAsync("routerProfiles", item);
+        }
+
+    }
+
+    private void storeTrainingExample(String valueName, Double value, Map<String, RouterDescription> routers, int version,
+                                      String tableName) {
         Map<String, AttributeValue> item = new HashMap<String, AttributeValue>();
         item.put("id", new AttributeValue().withS(UUID.randomUUID().toString()));
         item.put("version", new AttributeValue().withN(String.valueOf(version)));
         item.put(valueName, new AttributeValue().withN(String.valueOf(value)));
 
         for (String router : routers.keySet()) {
-            item.put(router, new AttributeValue().withN(String.valueOf(routers.get(router))));
+            item.put(router, new AttributeValue().withN(String.valueOf(routers.get(router).getStrength())));
         }
         putItemAsync(tableName, item);
     }

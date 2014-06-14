@@ -8,7 +8,9 @@ import java.util.Map;
  */
 public class RouterSignature {
     private String id;
-    private Map<String, Double> routers;
+    private Map<String, RouterDescription> routers;
+
+
 
     public String getId() {
         return id;
@@ -18,11 +20,11 @@ public class RouterSignature {
         this.id = id;
     }
 
-    public Map<String, Double> getRouters() {
+    public Map<String, RouterDescription> getRouters() {
         return routers;
     }
 
-    public void setRouters(Map<String, Double> routers) {
+    public void setRouters(Map<String, RouterDescription> routers) {
         this.routers = routers;
     }
 
