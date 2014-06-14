@@ -1,19 +1,27 @@
-package com.zappos.dao;
+package com.zappos.trifi.dao;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.Condition;
 import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
-import com.zappos.model.Router;
-import com.zappos.model.TrainingUpdate;
+import com.zappos.trifi.model.Router;
+import com.zappos.trifi.model.TrainingSignature;
+import com.zappos.trifi.model.TrainingUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 /**
- * Created by maxkeene on 6/12/14.
+ * This is the
  */
+@Repository
 public class TrainingDAO {
     private static final String trainingSetFloor = "trainingSet-floor";
     private static final String trainingSetX = "trainingSet-x-floor";
@@ -21,6 +29,34 @@ public class TrainingDAO {
 
     @Autowired
     private AmazonDynamoDBAsync dynamoDBAsyncClient;
+
+    @Autowired
+    private DynamoDBMapper dynamoDBMapper;
+
+
+    public PaginatedScanList<TrainingSignature> getSignatureList(String version, String floor) {
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+        Map<String, Condition> filter = new HashMap<>();
+
+        // Add version filter
+        if(version != null) {
+            filter.put("version", new Condition().withComparisonOperator(ComparisonOperator.EQ).withAttributeValueList
+                    (new AttributeValue().withS(version)));
+            scanExpression.setScanFilter(filter);
+        }
+
+        // Add floor filter
+        if(floor != null) {
+            filter.put("floor", new Condition().withComparisonOperator(ComparisonOperator.EQ).withAttributeValueList
+                    (new AttributeValue().withN(floor)));
+            scanExpression.setScanFilter(filter);
+        }
+
+        return dynamoDBMapper.scan(TrainingSignature.class, scanExpression);
+    }
+
+
 
     public void storeFloor(TrainingUpdate update) {
         storeTrainingExample("floor",

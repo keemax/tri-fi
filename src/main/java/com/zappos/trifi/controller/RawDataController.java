@@ -1,4 +1,4 @@
-package com.zappos.controller;
+package com.zappos.trifi.controller;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;

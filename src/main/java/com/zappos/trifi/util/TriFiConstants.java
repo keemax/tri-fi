@@ -1,4 +1,4 @@
-package com.zappos.util;
+package com.zappos.trifi.util;
 
 /**
  * Created by gradiep on 6/13/14.

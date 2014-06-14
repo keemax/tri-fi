@@ -1,10 +1,10 @@
-package com.zappos.controller;
+package com.zappos.trifi.controller;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.zappos.model.Router;
-import com.zappos.model.RouterSignature;
-import com.zappos.prediction.Predictor;
-import com.zappos.util.TriFiUtils;
+import com.zappos.trifi.model.Router;
+import com.zappos.trifi.model.RouterSignature;
+import com.zappos.trifi.prediction.Predictor;
+import com.zappos.trifi.util.TriFiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This controller handles {@link com.zappos.model.RouterSignature} updates to the system from all hosts.
+ * This controller handles {@link com.zappos.trifi.model.RouterSignature} updates to the system from all hosts.
  */
 @Controller
 public class UpdateController {

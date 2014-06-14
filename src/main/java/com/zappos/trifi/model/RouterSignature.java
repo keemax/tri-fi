@@ -1,7 +1,7 @@
-package com.zappos.model;
+package com.zappos.trifi.model;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
-import com.zappos.marshalling.RouterDescriptionTypeConverter;
+import com.zappos.trifi.marshalling.RouterDescriptionTypeConverter;
 
 import java.util.Map;
 

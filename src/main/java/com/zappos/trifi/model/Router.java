@@ -1,4 +1,4 @@
-package com.zappos.model;
+package com.zappos.trifi.model;
 
 /**
  *

@@ -1,11 +1,11 @@
-package com.zappos.model;
+package com.zappos.trifi.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  *
  */
+@Deprecated
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TrainingUpdate {
     private Location location;

@@ -1,4 +1,4 @@
-package com.zappos.controller;
+package com.zappos.trifi.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

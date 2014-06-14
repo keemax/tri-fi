@@ -1,7 +1,8 @@
-package com.zappos.prediction;
+package com.zappos.trifi.prediction;
 
-import com.zappos.model.Router;
-import com.zappos.util.TriFiConstants;
+import com.zappos.trifi.model.Router;
+import com.zappos.trifi.util.TriFiConstants;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.Map;
 /**
  * Created by maxkeene on 6/12/14.
  */
+@Component
 public class Trainer {
     @Resource(name = "knownRouters")
     private List<String> knownRouters;

@@ -1,8 +1,8 @@
-package com.zappos.model;
+package com.zappos.trifi.model;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
-import com.zappos.marshalling.LocationTypeConverter;
-import com.zappos.marshalling.RouterSignatureTypeConverter;
+import com.zappos.trifi.marshalling.LocationTypeConverter;
+import com.zappos.trifi.marshalling.RouterSignatureTypeConverter;
 
 /**
  * This class decorates the normal RouterSignature with some extra goodies
@@ -29,7 +29,7 @@ public class TrainingSignature {
     private Double floor;
 
     /**
-     * The {@link com.zappos.model.RouterSignature} for this training point.
+     * The {@link com.zappos.trifi.model.RouterSignature} for this training point.
      */
     private RouterSignature routerSignature;
 

@@ -40,6 +40,11 @@
             <version>v1.6-rev40-1.18.0-rc</version>
         </dependency>
         <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-storage</artifactId>
+            <version>v1-rev2-1.18.0-rc</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.http-client</groupId>
             <artifactId>google-http-client-jackson2</artifactId>
             <version>1.18.0-rc</version>
@@ -64,7 +69,6 @@
             <artifactId>appengine-gcs-client</artifactId>
             <version>0.3.12</version>
         </dependency>
-
     </dependencies>
 
     <properties>

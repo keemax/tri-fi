@@ -1,4 +1,4 @@
-package com.zappos.prediction;
+package com.zappos.trifi.prediction;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -12,15 +12,17 @@ import com.google.api.services.prediction.model.Input;
 import com.google.api.services.prediction.model.Output;
 import com.google.appengine.repackaged.com.google.common.collect.Queues;
 import com.google.common.io.Files;
-import com.zappos.model.Location;
-import com.zappos.model.Router;
-import com.zappos.model.RouterSignature;
-import com.zappos.util.TriFiConstants;
-import com.zappos.util.TriFiUtils;
+import com.zappos.trifi.model.Location;
+import com.zappos.trifi.model.Router;
+import com.zappos.trifi.model.RouterSignature;
+import com.zappos.trifi.util.TriFiConstants;
+import com.zappos.trifi.util.TriFiUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -42,6 +44,7 @@ import java.util.concurrent.TimeUnit;
  * predictions given a {code RouterSignature}. The prediction API is not especially fast so multi-threading it should
  * be beneficial.
  */
+@Component
 public class Predictor {
 
     @Value("${google.clientId}")

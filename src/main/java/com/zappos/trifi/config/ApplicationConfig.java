@@ -1,4 +1,4 @@
-package com.zappos.config;
+package com.zappos.trifi.config;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Region;
@@ -6,12 +6,10 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClient;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.zappos.dao.EmployeeDAO;
-import com.zappos.dao.LocationDAO;
-import com.zappos.dao.TrainingDAO;
-import com.zappos.prediction.Predictor;
-import com.zappos.prediction.Trainer;
+import com.zappos.trifi.dao.EmployeeDAO;
+import com.zappos.trifi.dao.LocationDAO;
+import com.zappos.trifi.prediction.Predictor;
+import com.zappos.trifi.prediction.Trainer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -22,10 +20,11 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by maxkeene on 6/11/14.
+ * Application Configuration. Setting up the beans and pulling the properties.
  */
 @Configuration
 @PropertySource("classpath:spring.properties")
+@ComponentScan({"com.zappos.trifi.dao","com.zappos.trifi.prediction"})
 public class ApplicationConfig {
     @Value("${aws.key}")
     private String accessKey;
@@ -50,34 +49,6 @@ public class ApplicationConfig {
     @Bean
     public DynamoDBMapper dynamoDBMapper() {
         return new DynamoDBMapper(amazonDynamoDB());
-    }
-
-
-
-    @Bean
-    public Predictor predictor() {
-        return new Predictor();
-    }
-
-
-    @Bean
-    public TrainingDAO trainingDAO() {
-        return new TrainingDAO();
-    }
-
-    @Bean
-    public LocationDAO locationDAO() {
-        return new LocationDAO();
-    }
-
-    @Bean
-    public EmployeeDAO employeeDAO() {
-        return new EmployeeDAO();
-    }
-
-    @Bean
-    public Trainer trainer() {
-        return new Trainer();
     }
 
     @Bean(name = "knownRouters")

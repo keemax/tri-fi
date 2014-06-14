@@ -1,10 +1,10 @@
-package com.zappos.dao;
+package com.zappos.trifi.dao;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
 import com.amazonaws.services.dynamodbv2.model.*;
-import com.zappos.model.Location;
-import org.apache.commons.lang3.StringUtils;
+import com.zappos.trifi.model.Location;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +14,7 @@ import java.util.Map;
 /**
  * Created by maxkeene on 6/13/14.
  */
+@Repository
 public class LocationDAO {
     private static final String LOCATION_TABLE = "locationUpdates";
 

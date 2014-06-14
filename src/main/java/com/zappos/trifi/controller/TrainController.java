@@ -1,17 +1,12 @@
-package com.zappos.controller;
+package com.zappos.trifi.controller;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.zappos.dao.TrainingDAO;
-import com.zappos.model.Location;
-import com.zappos.model.Router;
-import com.zappos.model.TrainingSignature;
-import com.zappos.model.TrainingUpdate;
-import com.zappos.prediction.Trainer;
+import com.zappos.trifi.dao.TrainingDAO;
+import com.zappos.trifi.model.TrainingSignature;
+import com.zappos.trifi.prediction.Trainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.*;
 
 /**
  * Created by maxkeene on 6/11/14.
@@ -52,5 +47,7 @@ public class TrainController {
         dynamoDBMapper.save(update);
         return "sweet request bro";
     }
+
+
 
 }

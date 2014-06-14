@@ -1,7 +1,7 @@
-package com.zappos.controller;
+package com.zappos.trifi.controller;
 
-import com.zappos.dao.EmployeeDAO;
-import com.zappos.model.Employee;
+import com.zappos.trifi.dao.EmployeeDAO;
+import com.zappos.trifi.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * Created by maxkeene on 6/13/14.
+ * RestController for getting JSON {@link com.zappos.trifi.model.Employee} blobs.
  */
 @RestController
 public class EmployeeController {

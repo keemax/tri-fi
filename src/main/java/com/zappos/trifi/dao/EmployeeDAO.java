@@ -1,10 +1,10 @@
-package com.zappos.dao;
+package com.zappos.trifi.dao;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
 import com.amazonaws.services.dynamodbv2.model.*;
-import com.zappos.model.Employee;
-import com.zappos.model.Location;
+import com.zappos.trifi.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by maxkeene on 6/13/14.
  */
+@Repository
 public class EmployeeDAO {
     private static final String EMPLOYEE_TABLE = "employees";
 

@@ -1,9 +1,9 @@
-package com.zappos.marshalling;
+package com.zappos.trifi.marshalling;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zappos.model.RouterSignature;
+import com.zappos.trifi.model.RouterSignature;
 
 import java.io.IOException;
 
