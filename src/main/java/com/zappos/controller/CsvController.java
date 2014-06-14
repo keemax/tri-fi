@@ -2,11 +2,11 @@ package com.zappos.controller;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.google.appengine.tools.cloudstorage.*;
-import com.zappos.model.RouterDescription;
+import com.zappos.model.Router;
+import com.zappos.util.TriFiUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -58,14 +58,8 @@ public class CsvController {
 
         ScanRequest scanRequest = new ScanRequest().withTableName(tableName);
         ScanResult result = dynamoDBAsync.scan(scanRequest);
-        Map<String, AttributeValue> lastEvaluated = result.getLastEvaluatedKey();
-//        List<String> rowt = new ArrayList<String>();
-//        rowt.add(" ");
-//        for (String router : knownRouters) {
-//            rowt.add(router);
-//        }
-//        String rs = StringUtils.join(rowt, ", ");
-//        rows.add(rs);
+        lastEvaluated = result.getLastEvaluatedKey();
+
         do {
             List<Map<String, AttributeValue>> items = result.getItems();
             for (Map<String, AttributeValue> item : items) {
@@ -74,17 +68,12 @@ public class CsvController {
                 row.add("\"" + item.get(key).getN()+"\"");
 
 
-
                 for (String router : knownRouters) {
-                    RouterDescription itemDescription = new RouterDescription();
-                    itemDescription.setBand(routerBands.get(router));
-                    itemDescription.setStrength(item.get(router));
-                    double e = 255;
-                    if(item.get(router) != null) {
-                        e = Math.pow(10,((27.55 - (20 * Math.log10(3750)) - (Double.parseDouble(item.get(router).getN
-                                ()) + 92)) /20)) * 60000;
-                    }
-                    row.add(String.valueOf(e));
+                    Router itemDescription = new Router();
+                    itemDescription.setFreq(routerBands.get(router));
+                    itemDescription.setStrength(Double.parseDouble(item.get(router).getN()));
+
+                    row.add(String.valueOf(TriFiUtils.getSignalStrength(itemDescription)));
                 }
                 String rowString = StringUtils.join(row, ", ");
                 rows.add(rowString);

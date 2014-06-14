@@ -5,6 +5,7 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClient;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.zappos.dao.EmployeeDAO;
 import com.zappos.dao.LocationDAO;
@@ -13,6 +14,7 @@ import com.zappos.prediction.Predictor;
 import com.zappos.prediction.Trainer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
@@ -44,6 +46,12 @@ public class ApplicationConfig {
         client.setRegion(Region.getRegion(Regions.US_WEST_2));
         return client;
     }
+
+    @Bean
+    public DynamoDBMapper dynamoDBMapper() {
+        return new DynamoDBMapper(amazonDynamoDB());
+    }
+
 
 
     @Bean

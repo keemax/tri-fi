@@ -3,7 +3,7 @@ package com.zappos.dao;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
-import com.zappos.model.RouterDescription;
+import com.zappos.model.Router;
 import com.zappos.model.TrainingUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -51,18 +51,18 @@ public class TrainingDAO {
         storeRouterProfile(update.getRouterSignature().getRouters());
     }
 
-    private void storeRouterProfile(Map<String, RouterDescription> routers) {
+    private void storeRouterProfile(Map<String, Router> routers) {
 
         for(String router : routers.keySet()) {
             Map<String, AttributeValue> item = new HashMap<String, AttributeValue>();
             item.put("id", new AttributeValue().withS(router));
-            item.put("band", new AttributeValue().withN(String.valueOf(routers.get(router).getBand())));
+            item.put("band", new AttributeValue().withN(String.valueOf(routers.get(router).getFreq())));
             putItemAsync("routerProfiles", item);
         }
 
     }
 
-    private void storeTrainingExample(String valueName, Double value, Map<String, RouterDescription> routers, int version,
+    private void storeTrainingExample(String valueName, Double value, Map<String, Router> routers, int version,
                                       String tableName) {
         Map<String, AttributeValue> item = new HashMap<String, AttributeValue>();
         item.put("id", new AttributeValue().withS(UUID.randomUUID().toString()));

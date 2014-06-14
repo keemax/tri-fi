@@ -1,6 +1,6 @@
 package com.zappos.util;
 
-import com.zappos.model.RouterDescription;
+import com.zappos.model.Router;
 
 /**
  * Created by gradiep on 6/13/14.
@@ -11,9 +11,9 @@ public class TriFiUtils {
     /**
      *
      */
-    public static Double getSignal(RouterDescription routerDescription) {
-        return routerDescription == null ? DEFAULT_NETWORK :  Math.pow(10,((27.55 - (20 * Math.log10(routerDescription
-                .getBand())) - (routerDescription.getStrength() + 92)) / 20)) * 60000;
+    public static Double getSignalStrength(Router router) {
+        return router == null ? DEFAULT_NETWORK :  Math.pow(10,((27.55 - (20 * Math.log10(router
+                .getFreq())) - (router.getStrength() + (-1 * router.getNoise()))) / 20)) * 1000;
     }
 
 }

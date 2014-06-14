@@ -1,9 +1,7 @@
 package com.zappos.controller;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
-import com.zappos.model.RouterDescription;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.zappos.model.Router;
 import com.zappos.model.RouterSignature;
 import com.zappos.prediction.Predictor;
 import com.zappos.util.TriFiUtils;
@@ -15,17 +13,17 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Created by maxkeene on 6/11/14.
+ * This controller handles {@link com.zappos.model.RouterSignature} updates to the system from all hosts.
  */
 @Controller
 public class UpdateController {
+
     @Autowired
-    private AmazonDynamoDBAsync dynamoDBAsyncClient;
+    private DynamoDBMapper dynamoDBMapper;
 
     @Autowired
     private Predictor predictor;
@@ -33,25 +31,27 @@ public class UpdateController {
     @Resource(name = "knownRouters")
     private List<String> knownRouters;
 
-    private static final String locationUpdateTable = "locationUpdates";
 
+
+    /**
+     * This method gets called to update the {@code RouterSignature} of the caller as well as save the predicted
+     * location of the caller.
+     * @param routerSignature A {@code RouterSignature} that describes the networks visible to the caller.
+     * @return a message indicating success.
+     */
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public String storeUpdate(@RequestBody RouterSignature routerSignature) {
-        Map<String, AttributeValue> item = new HashMap<String, AttributeValue>();
-        item.put("id", new AttributeValue().withS(routerSignature.getId()));
-        item.put("timestamp", new AttributeValue().withN(String.valueOf(System.currentTimeMillis())));
+    public String updateSignature(@RequestBody RouterSignature routerSignature) {
+        // Step 1 - Set timestamp
+        routerSignature.setTimestamp(String.valueOf(System.currentTimeMillis()));
 
-        Map<String, RouterDescription> routers = routerSignature.getRouters();
-        for (String router : knownRouters) {
-            Double strength = TriFiUtils.getSignal(routers.get(router));
-            item.put(router, new AttributeValue().withN(String.valueOf(strength)));
-        }
+        // Save the RouterSignature to the dynamo database for long-term storage.
+        dynamoDBMapper.save(routerSignature);
 
-        PutItemRequest putItemRequest = new PutItemRequest()
-                .withTableName(locationUpdateTable)
-                .withItem(item);
-        dynamoDBAsyncClient.putItemAsync(putItemRequest);
+        // Fire off a prediction for this signature
+        predictor.queuePrediction(routerSignature);
+
+        // Return awesome job, you win.
         return "sweet request bro";
     }
 
@@ -60,10 +60,10 @@ public class UpdateController {
     public String predict(@PathVariable("model") String model, @RequestBody RouterSignature routerSignature) throws
             IOException,
             GeneralSecurityException {
-        Map<String, RouterDescription> routers = routerSignature.getRouters();
-        List<Object> input = new ArrayList<Object>();
+        Map<String, Router> routers = routerSignature.getRouters();
+        List<Object> input = new ArrayList<>();
         for (String router : knownRouters) {
-            input.add(TriFiUtils.getSignal(routers.get(router)));
+            input.add(TriFiUtils.getSignalStrength(routers.get(router)));
         }
         System.out.println(input);
         return "x = " + predictor.predict(input, "x-" + model) + " y = " + predictor.predict(input,
