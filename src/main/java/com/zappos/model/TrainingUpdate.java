@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * Created by maxkeene on 6/12/14.
+ *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TrainingUpdate {
