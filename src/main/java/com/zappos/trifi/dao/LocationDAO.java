@@ -20,6 +20,8 @@ import java.util.*;
  */
 @Repository
 public class LocationDAO {
+
+    @Deprecated
     private static final String LOCATION_TABLE = "test-locations";
 
     @Autowired
@@ -34,11 +36,25 @@ public class LocationDAO {
     }
 
 
+    public Location getLatestLocationForHost(String hostname) {
+        Location rval = new Location().withTimestamp("0000-00-00T00-00-00");
+
+        for(Location l : getAllLocationsForHost(hostname)) {
+            if(rval.getTimestamp().compareTo(l.getTimestamp()) < 0) {
+                rval = l;
+            }
+        }
+
+        return rval.getTimestamp().equals("0000-00-00T00-00-00") ? null : rval;
+    }
+
     public List<Location> getAllLocationsForHost(String hostname) {
         return dynamoDBMapper.query(Location.class, new DynamoDBQueryExpression<Location>().withHashKeyValues(new
                 Location()
                 .withHostname(hostname)));
     }
+
+
 
     public List<Location> getAllLocationsForHostInRange(String hostname, String start, String end) {
         return dynamoDBMapper.query(Location.class, new DynamoDBQueryExpression<Location>().withHashKeyValues(new
@@ -47,6 +63,7 @@ public class LocationDAO {
                         AttributeValue().withS(start), new AttributeValue().withS(end))
         ));
     }
+
 
     public List<Location> getLatestLocationsForFloor(String floor, Integer timeToLookBack) {
         Double dFloor = Double.parseDouble(floor);

@@ -165,6 +165,7 @@ public class Predictor {
 
         Prediction prediction = new Prediction.Builder(httpTransport, JSON_FACTORY, credential)
                 .setApplicationName(TriFiConstants.GOOGLE_APP_NAME).build();
+
         Input input = new Input();
         Input.InputInput inputInput = new Input.InputInput();
         inputInput.setCsvInstance(values);
@@ -172,5 +173,32 @@ public class Predictor {
         Output output = prediction.trainedmodels().predict(TriFiConstants.GOOGLE_APP_NAME, model, input).execute();
         return output.getOutputValue();
     }
+
+//    public String insertPrediction() throws IOException, GeneralSecurityException {
+//        httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+//        // check for valid setup
+//        if (serviceAccountEmail.startsWith("Enter ")) {
+//            System.err.println(serviceAccountEmail);
+//            System.exit(1);
+//        }
+//        String p12Content = Files.readFirstLine(new File("key.p12"), Charset.defaultCharset());
+//        if (p12Content.startsWith("Please")) {
+//            System.err.println(p12Content);
+//            System.exit(1);
+//        }
+//        // service account credential (uncomment setServiceAccountUser for domain-wide delegation)
+//        GoogleCredential credential = new GoogleCredential.Builder().setTransport(httpTransport)
+//                .setJsonFactory(JSON_FACTORY)
+//                .setServiceAccountId(serviceAccountEmail)
+//                .setServiceAccountScopes(Collections.singleton(PredictionScopes.PREDICTION))
+//                .setServiceAccountPrivateKeyFromP12File(new File("key.p12"))
+//                .build();
+//
+//
+//        Prediction prediction = new Prediction.Builder(httpTransport, JSON_FACTORY, credential)
+//                .setApplicationName(TriFiConstants.GOOGLE_APP_NAME).build();
+//
+//        prediction.trainedmodels().update()
+//    }
 
 }

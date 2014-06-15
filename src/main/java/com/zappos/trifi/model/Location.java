@@ -86,4 +86,9 @@ public class Location {
         this.hostname = hostname;
         return this;
     }
+
+    public Location withTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+        return this;
+    }
 }

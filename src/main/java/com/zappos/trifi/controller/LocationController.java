@@ -53,8 +53,8 @@ public class LocationController {
         return locationDAO.getLatestLocationsForFloor(floor, timeSince);
     }
 
-    @RequestMapping("/find/last")
-    public Location findPersonsLastLocation(@RequestParam("id") String id) {
-        return locationDAO.getLastLocation(id);
+    @RequestMapping("/location/last")
+    public Location findPersonsLastLocation(@RequestParam("hostname") String hostname) {
+        return locationDAO.getLatestLocationForHost(hostname);
     }
 }
