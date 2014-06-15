@@ -43,15 +43,16 @@ public class TrainingDAO {
         if(version != null) {
             filter.put("version", new Condition().withComparisonOperator(ComparisonOperator.EQ).withAttributeValueList
                     (new AttributeValue().withS(version)));
-            scanExpression.setScanFilter(filter);
+
         }
 
         // Add floor filter
         if(floor != null) {
             filter.put("floor", new Condition().withComparisonOperator(ComparisonOperator.EQ).withAttributeValueList
                     (new AttributeValue().withN(floor)));
-            scanExpression.setScanFilter(filter);
         }
+
+        scanExpression.setScanFilter(filter);
 
         return dynamoDBMapper.scan(TrainingSignature.class, scanExpression);
     }

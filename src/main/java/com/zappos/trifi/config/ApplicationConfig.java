@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Configuration
 @PropertySource("classpath:spring.properties")
-@ComponentScan({"com.zappos.trifi.dao","com.zappos.trifi.prediction"})
+@ComponentScan({"com.zappos.trifi.dao","com.zappos.trifi.prediction", "com.zappos.trifi.controller"})
 public class ApplicationConfig {
     @Value("${aws.key}")
     private String accessKey;
