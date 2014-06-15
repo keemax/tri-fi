@@ -107,7 +107,7 @@ public class LocationDAO {
 
     public Location getLastLocation(String id) {
         Map<String, Condition> queryConditions = new HashMap<String, Condition>();
-        queryConditions.put("id", new Condition().withComparisonOperator(ComparisonOperator.EQ)
+        queryConditions.put("hostname", new Condition().withComparisonOperator(ComparisonOperator.EQ)
                 .withAttributeValueList(new AttributeValue().withS(id)));
         QueryRequest locationQuery = new QueryRequest().withTableName(LOCATION_TABLE)
                 .withKeyConditions(queryConditions)

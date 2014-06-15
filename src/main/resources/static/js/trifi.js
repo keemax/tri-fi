@@ -37,30 +37,43 @@ function updateLocations() {
     });
 }
 
-function updateLastLocation(id) {
-    $.ajax({
+//function updateLastLocation(id) {
+function updateLastLocation(x,y) {
+    var imgWidth = 15;
+    var imgHeight = 15;
+    var data = {"x":x,"y":y};
+    var top = data.x / 500 * $("#map").width() - (imgHeight/2);
+    var right = data.y /350 * $("#map").height() - (imgWidth/2);
+    $("#map").children(".bki").remove();
+    var $img = $("<img>", { src: "images/red_dot.png", class: "bki", alt: "alt text"});
+    $img.css({ "position": "absolute", "right": right, "top": top});
+    $("#map").append($img);
+    /*$.ajax({
         url: "/find/last?id=" + id,
         dataType: "json",
         type: "GET"
     }).done(function(data) {
         $("#map").children("." + id.split('.').join('')).remove();
         var $img = $("<img>", {
-            src: "/images/pgradie.png",
+            src: "/images/red_square.gif",
             class: id.split('.').join('')
         });
-        var right = data.x / 500 * $("#map").width() - 28;
-        var top = data.y /350 * $("#map").height() - 26;
+        var top = data.x / 500 * $("#map").width() - (imgHeight/2);
+        var right = data.y /350 * $("#map").height() - (imgWidth/2);
         $img.css({
             "position": "absolute",
             "right": right,
             "top": top
         });
         $("#map").append($img);
-    });
+    });*/
 }
 
 function updateEmployeeList() {
-    $.ajax({
+    //var item = {"name":"Max Keener","id":""};
+    employeeList = {label:"max keener","value":"12345"};
+    $("#search").prop("disabled", false);
+    /*$.ajax({
         url: "/employee/all",
         dataType: "json",
         async: false,
@@ -71,7 +84,7 @@ function updateEmployeeList() {
             return { label: item.name, value: item.id};
         });
         $("#search").prop("disabled", false);
-    });
+    });*/
 }
 
 function autocompleteEmployees(request, response) {
@@ -89,5 +102,4 @@ function autocompleteEmployees(request, response) {
         }
     });
     response(filteredEmployees);
-
 }
