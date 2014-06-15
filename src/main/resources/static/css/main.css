@@ -4,7 +4,7 @@ body {
 }
 
 #map {
-    background: url('/images/floor_grid.png');
+    background: url('/images/floor_4_grid.png');
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
