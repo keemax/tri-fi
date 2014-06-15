@@ -26,7 +26,7 @@ $(document).ready(function() {
         parentLi.remove();
     });
 
-    setInterval("updateLocations()", 1000);
+    setInterval("updateLocations()", 20000);
 
 });
 
@@ -37,26 +37,27 @@ function updateLocations() {
     });
 }
 
-//function updateLastLocation(id) {
-function updateLastLocation(x,y) {
+function updateLastLocation(hostname) {
+//function updateLastLocation(x,y) {
     var imgWidth = 15;
     var imgHeight = 15;
-    var data = {"x":x,"y":y};
+    /*var data = {"x":x,"y":y};
     var top = data.x / 500 * $("#map").width() - (imgHeight/2);
     var right = data.y /350 * $("#map").height() - (imgWidth/2);
     $("#map").children(".bki").remove();
     var $img = $("<img>", { src: "images/red_dot.png", class: "bki", alt: "alt text"});
     $img.css({ "position": "absolute", "right": right, "top": top});
-    $("#map").append($img);
-    /*$.ajax({
-        url: "/find/last?id=" + id,
+    $("#map").append($img);*/
+    $.ajax({
+        url: "/location/last?hostname=" + hostname,
         dataType: "json",
         type: "GET"
     }).done(function(data) {
-        $("#map").children("." + id.split('.').join('')).remove();
+        console.log( data);
+        $("#map").children("." + hostname.split('.').join('')).remove();
         var $img = $("<img>", {
-            src: "/images/red_square.gif",
-            class: id.split('.').join('')
+            src: "/images/red_dot.png",
+            class: hostname.split('.').join('')
         });
         var top = data.x / 500 * $("#map").width() - (imgHeight/2);
         var right = data.y /350 * $("#map").height() - (imgWidth/2);
@@ -65,26 +66,28 @@ function updateLastLocation(x,y) {
             "right": right,
             "top": top
         });
+        $("#map").css("background-image", "url(/images/floor_"+Math.round(data.floor)+"_grid.png)");
         $("#map").append($img);
-    });*/
+    });
 }
 
 function updateEmployeeList() {
     //var item = {"name":"Max Keener","id":""};
-    employeeList = {label:"max keener","value":"12345"};
-    $("#search").prop("disabled", false);
-    /*$.ajax({
+    /*employeeList = {label:"max keener","value":"12345"};
+    $("#search").prop("disabled", false);*/
+    $.ajax({
         url: "/employee/all",
         dataType: "json",
         async: false,
         type: "GET"
     }).done(function(data) {
         console.log("got employee list");
+        console.log( data);
         employeeList = $.map(data, function(item) {
-            return { label: item.name, value: item.id};
+            return { label: item.realname, value: item.hostname};
         });
         $("#search").prop("disabled", false);
-    });*/
+    });
 }
 
 function autocompleteEmployees(request, response) {
