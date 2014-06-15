@@ -5,6 +5,11 @@ $(document).ready(function() {
     var width = $("#map").width();
     $("#map").height(width * .6985);
 
+    //preload images
+    IMAGES = {"smallLoc": new Image(), "bigLoc": new Image()};
+    IMAGES["smallLoc"].src="/images/red_dot.png";
+    IMAGES["bigLoc"].src="/images/red_circle.png";
+
     updateEmployeeList()
 
     // set up autocomplete on search input
@@ -26,7 +31,7 @@ $(document).ready(function() {
         parentLi.remove();
     });
 
-    setInterval("updateLocations()", 20000);
+    setInterval("updateLocations()", 5000);
 
 });
 
@@ -37,37 +42,77 @@ function updateLocations() {
     });
 }
 
+function displayLocation(id, x, y)
+{
+    var bigOpacity = .1;
+    var smallOpacity = .7;
+    var smallImg = IMAGES["smallLoc"];
+    var bigImg = IMAGES["bigLoc"];
+
+    //$("#map").children("." + id).remove();
+    var smallTop = Math.round(x / 500 * $("#map").width() - (smallImg.height/2));
+    var smallRight = Math.round(y / 350 * $("#map").height() - (smallImg.width/2));
+    var bigTop = Math.round(x / 500 * $("#map").width() - (bigImg.height/2));
+    var bigRight = Math.round(y / 350 * $("#map").height() - (bigImg.width/2));
+
+    //check to see if we are already displaying
+    if( $("#"+id+"SMALL").length>0 ) {
+        //if we haven't moved, don't do anything
+        if( smallTop != Math.round($("#"+id+"SMALL").position().top)
+               || ($("#map").width()-smallRight-smallImg.width) != Math.round($("#"+id+"SMALL").position().left)) {
+            $("#"+id+"BIG").fadeTo(0, 0);
+            $("#"+id+"SMALL").animate({
+                    "right": smallRight,
+                    "top": smallTop
+                }, 1000, function(){
+                    $("#"+id+"BIG").css({"right":bigRight,"top":bigTop});
+                    $("#"+id+"BIG").fadeTo( 1000, bigOpacity);
+                }
+            );
+        }
+    } else {
+        //inner circle
+        var $imgSmall = $("<img>", {
+            src: "/images/red_dot.png",
+            class: id,
+            id: id+"SMALL",
+        });
+        $imgSmall.css({
+            "position": "absolute",
+            "right": smallRight,
+            "top": smallTop,
+            "opacity": smallOpacity
+        });
+        $("#map").append($imgSmall);
+
+        //outer circle
+        var $imgBig = $("<img>", {
+            src: "/images/red_circle.png",
+            class: id,
+            id: id+"BIG"
+        });
+        $imgBig.css({
+            "position": "absolute",
+            "right": bigRight,
+            "top": bigTop,
+            "opacity": bigOpacity
+        });
+        $("#map").append($imgBig);
+    }
+}
+
 function updateLastLocation(hostname) {
-//function updateLastLocation(x,y) {
     var imgWidth = 15;
     var imgHeight = 15;
-    /*var data = {"x":x,"y":y};
-    var top = data.x / 500 * $("#map").width() - (imgHeight/2);
-    var right = data.y /350 * $("#map").height() - (imgWidth/2);
-    $("#map").children(".bki").remove();
-    var $img = $("<img>", { src: "images/red_dot.png", class: "bki", alt: "alt text"});
-    $img.css({ "position": "absolute", "right": right, "top": top});
-    $("#map").append($img);*/
+
     $.ajax({
         url: "/location/last?hostname=" + hostname,
         dataType: "json",
         type: "GET"
     }).done(function(data) {
-        console.log( data);
-        $("#map").children("." + hostname.split('.').join('')).remove();
-        var $img = $("<img>", {
-            src: "/images/red_dot.png",
-            class: hostname.split('.').join('')
-        });
-        var top = data.x / 500 * $("#map").width() - (imgHeight/2);
-        var right = data.y /350 * $("#map").height() - (imgWidth/2);
-        $img.css({
-            "position": "absolute",
-            "right": right,
-            "top": top
-        });
+        console.log(data);
+        displayLocation(hostname.split('.').join(''), data.x, data.y);
         $("#map").css("background-image", "url(/images/floor_"+Math.round(data.floor)+"_grid.png)");
-        $("#map").append($img);
     });
 }
 
