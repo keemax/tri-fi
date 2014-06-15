@@ -27,16 +27,26 @@ public class CsvController {
     @Resource(name = "knownRouters")
     private List<String> knownRouters;
 
-    @Autowired
+    @Resource
     TrainingDAO trainingDAO;
 
-    @RequestMapping(value = "/csv/dimension/{dimension}/v/{version}/floor/{floor}", method = RequestMethod.GET)
+    @RequestMapping(value = "/csv/dimension/{dimension}/version/{version}", method = RequestMethod.GET)
+    public HttpEntity<byte[]> getCsvFromTable(@PathVariable("dimension") String dimension,
+                                              @PathVariable("version") String version) throws IOException {
+        return getCsvFromTable(dimension, version, null);
+    }
+
+    @RequestMapping(value = "/csv/dimension/{dimension}/version/{version}/floor/{floor}", method = RequestMethod.GET)
     public HttpEntity<byte[]> getCsvFromTable(@PathVariable("dimension") String dimension,
                                               @PathVariable("version") String version,
                                               @PathVariable("floor") String floor) throws IOException {
 
         // Get all the training signatures for the version/floor combo
         PaginatedScanList<TrainingSignature> signatures = trainingDAO.getSignatureList(version, floor);
+
+        if(signatures.isEmpty()) {
+            return null;
+        }
 
         // Turn that into a CSV string
         String csvString = TriFiUtils.getCSVString(signatures, dimension, knownRouters);

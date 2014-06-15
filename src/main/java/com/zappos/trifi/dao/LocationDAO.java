@@ -1,30 +1,86 @@
 package com.zappos.trifi.dao;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.*;
 import com.zappos.trifi.model.Location;
+import com.zappos.trifi.model.TrainingSignature;
+import com.zappos.trifi.util.TriFiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.annotation.Resource;
+import java.util.*;
 
 /**
  * Created by maxkeene on 6/13/14.
  */
 @Repository
 public class LocationDAO {
-    private static final String LOCATION_TABLE = "locationUpdates";
+    private static final String LOCATION_TABLE = "test-locations";
 
     @Autowired
     private AmazonDynamoDBAsync dynamoDBAsync;
+
+    @Resource
+    private DynamoDBMapper dynamoDBMapper;
+
 
     public Location getMostRecentLocation(String id) {
         return null;
     }
 
+
+    public List<Location> getAllLocationsForHost(String hostname) {
+        return dynamoDBMapper.query(Location.class, new DynamoDBQueryExpression<Location>().withHashKeyValues(new
+                Location()
+                .withHostname(hostname)));
+    }
+
+    public List<Location> getAllLocationsForHostInRange(String hostname, String start, String end) {
+        return dynamoDBMapper.query(Location.class, new DynamoDBQueryExpression<Location>().withHashKeyValues(new
+                Location().withHostname(hostname)).withRangeKeyCondition("timestamp",
+                new Condition().withComparisonOperator(ComparisonOperator.BETWEEN).withAttributeValueList(new
+                        AttributeValue().withS(start), new AttributeValue().withS(end))
+        ));
+    }
+
+    public List<Location> getLatestLocationsForFloor(String floor, Integer timeToLookBack) {
+        Double dFloor = Double.parseDouble(floor);
+        List<Location> timeSinceLocations = getAllLocationsInTimeRange(TriFiUtils.getTimestampMinutesBefore
+                        (timeToLookBack), TriFiUtils.getTimestamp());
+        List<Location> latestLocationsForFloor = new ArrayList<>();
+        Set<String> seenHosts = new HashSet<>();
+        for(Location l : timeSinceLocations) {
+            if (TriFiUtils.isFloorEqual(l.getFloor(), dFloor)) {
+                if (!seenHosts.contains(l.getHostname())) {
+                    seenHosts.add(l.getHostname());
+                    latestLocationsForFloor.add(l);
+                }
+            }
+        }
+        return latestLocationsForFloor;
+    }
+
+
+    public List<Location> getAllLocationsInTimeRange(String start, String end) {
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+        Map<String, Condition> filter = new HashMap<>();
+
+        filter.put("timestamp", new Condition().withComparisonOperator(ComparisonOperator.BETWEEN)
+                .withAttributeValueList(new AttributeValue().withS(start), new AttributeValue().withS(end)));
+
+        scanExpression.setScanFilter(filter);
+        return dynamoDBMapper.scan(Location.class, scanExpression);
+    }
+
+
+
+
+    /*** older ***/
     public List<Location> getAllLocations(String id) {
         Map<String, Condition> queryConditions = new HashMap<String, Condition>();
         queryConditions.put("id", new Condition().withComparisonOperator(ComparisonOperator.EQ)

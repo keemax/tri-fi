@@ -43,7 +43,7 @@ public class UpdateController {
     @ResponseBody
     public String updateSignature(@RequestBody RouterSignature routerSignature) {
         // Step 1 - Set timestamp
-        routerSignature.setTimestamp(String.valueOf(System.currentTimeMillis()));
+        routerSignature.setTimestamp(TriFiUtils.getTimestamp());
 
         // Save the RouterSignature to the dynamo database for long-term storage.
         dynamoDBMapper.save(routerSignature);

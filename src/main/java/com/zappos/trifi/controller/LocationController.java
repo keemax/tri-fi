@@ -34,6 +34,25 @@ public class LocationController {
         }
     }
 
+    @RequestMapping("/location/all")
+    public List<Location> getAllLocationByHostname(@RequestParam("hostname") String hostname) {
+        return locationDAO.getAllLocationsForHost(hostname);
+    }
+
+    @RequestMapping("/location/range")
+    public List<Location> getAllLocationByHostname(@RequestParam("hostname") String hostname,
+                                                   @RequestParam("start") String start,
+                                                   @RequestParam("end") String end) {
+        return locationDAO.getAllLocationsForHostInRange(hostname, start, end);
+    }
+
+    @RequestMapping("/location/floor/latest")
+    public List<Location> getLatestLocationByFloor(@RequestParam("floor") String floor,
+                                                   @RequestParam("timeSince") Integer timeSince) {
+
+        return locationDAO.getLatestLocationsForFloor(floor, timeSince);
+    }
+
     @RequestMapping("/find/last")
     public Location findPersonsLastLocation(@RequestParam("id") String id) {
         return locationDAO.getLastLocation(id);
