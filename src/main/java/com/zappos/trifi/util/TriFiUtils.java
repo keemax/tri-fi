@@ -7,10 +7,7 @@ import com.zappos.trifi.model.TrainingSignature;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -19,7 +16,9 @@ public class TriFiUtils {
 
     public static final double DEFAULT_NETWORK = 180.0;
 
-    private static final FastDateFormat fdf = FastDateFormat.getInstance("yyyy-MM-dd'T'HH-mm-ss");
+    private static final FastDateFormat fdf = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss",
+            new SimpleTimeZone(SimpleTimeZone.UTC_TIME, "UTC"));
+
 
     /**
      * 10 ^ ((27.55 - (20 * log10(5825)) - (-87))/20)
@@ -67,6 +66,7 @@ public class TriFiUtils {
 
         return StringUtils.join(rows, "\n");
     }
+
 
     public static String getTimestamp() {
         return fdf.format(new Date());
