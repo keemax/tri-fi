@@ -162,7 +162,8 @@ function displayLocation(hostname, x, y)
             "position": "absolute",
             "right": bigRight,
             "top": bigTop,
-            "opacity": bigOpacity
+            "opacity": bigOpacity,
+            "z-index": 1
         });
         $("#map").append($imgBig);
 
@@ -177,7 +178,8 @@ function displayLocation(hostname, x, y)
             "position": "absolute",
             "right": smallRight,
             "top": smallTop,
-            "opacity": smallOpacity
+            "opacity": smallOpacity,
+            "z-index": 2
         });
         $("#map").append($imgSmall);
     }
@@ -209,7 +211,7 @@ function updateLastLocation(hostname) {
         console.log(data);
         locationMap["\"" + hostname.split('.').join('') + "\""] = data;
         displayLocation(hostname, data.x, data.y);
-        //$("#map").css("background-image", "url(/images/floor_"+Math.round(data.floor)+"_grid.png)");
+        $("#map").css("background-image", "url(/images/floor_"+Math.round(data.floor)+"_grid.png)");
     });
 }
 
