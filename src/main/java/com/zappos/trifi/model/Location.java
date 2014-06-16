@@ -34,6 +34,17 @@ public class Location {
      * Floor-coordinate.
      */
     private Double floor;
+    private Integer floorInt;
+
+    /**
+     * The {@link com.zappos.trifi.model.RouterSignature} that was used to predict this location.
+     */
+    private String originRouterSignature;
+
+    /**
+     * The model that was used to predict this location.
+     */
+    private String originModel;
 
     @DynamoDBHashKey
     public String getHostname() {
@@ -76,11 +87,33 @@ public class Location {
         this.floor = floor;
     }
 
+    @DynamoDBIgnore
+    public Integer getFloorInt() {
+        return floorInt;
+    }
+
+    public void setFloorInt(Integer floorInt) {
+        this.floorInt = floorInt;
+    }
+
+    @DynamoDBAttribute
+    public String getOriginRouterSignature() {
+        return originRouterSignature;
+    }
+    public void setOriginRouterSignature(String originRouterSignature) {
+        this.originRouterSignature = originRouterSignature;
+    }
+
+    @DynamoDBAttribute
+    public String getOriginModel() {
+        return originModel;
+    }
+    public void setOriginModel(String originModel) {
+        this.originModel = originModel;
+    }
 
     /**
-     * Method to make DynamoMapper stuff easier.
-     * @param hostname
-     * @return
+     * Builder type methods to set properties on the fly.
      */
     public Location withHostname(String hostname) {
         this.hostname = hostname;
@@ -91,4 +124,11 @@ public class Location {
         this.timestamp = timestamp;
         return this;
     }
+
+    public Location withFloorInt(Integer floorInt) {
+        this.floorInt = floorInt;
+        return this;
+    }
+
+
 }

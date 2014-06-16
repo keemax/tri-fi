@@ -16,13 +16,15 @@ import javax.annotation.Resource;
 import java.util.*;
 
 /**
- * Created by maxkeene on 6/13/14.
+ *
  */
 @Repository
 public class LocationDAO {
 
     @Deprecated
     private static final String LOCATION_TABLE = "test-locations";
+
+    private static final String BEGINNING_OF_TIME = "0000-00-00T00-00-00";
 
     @Autowired
     private AmazonDynamoDBAsync dynamoDBAsync;
@@ -37,7 +39,7 @@ public class LocationDAO {
 
 
     public Location getLatestLocationForHost(String hostname) {
-        Location rval = new Location().withTimestamp("0000-00-00T00-00-00");
+        Location rval = new Location().withTimestamp(BEGINNING_OF_TIME);
 
         for(Location l : getAllLocationsForHost(hostname)) {
             if(rval.getTimestamp().compareTo(l.getTimestamp()) < 0) {
@@ -45,7 +47,7 @@ public class LocationDAO {
             }
         }
 
-        return rval.getTimestamp().equals("0000-00-00T00-00-00") ? null : rval;
+        return rval.getTimestamp().equals(BEGINNING_OF_TIME) ? null : rval;
     }
 
     public List<Location> getAllLocationsForHost(String hostname) {

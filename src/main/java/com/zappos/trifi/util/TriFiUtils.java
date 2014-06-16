@@ -78,6 +78,10 @@ public class TriFiUtils {
     public static Boolean isFloorEqual(Double f1, Double f2) {
         return f1 > f2 - .4 && f1 < f2 + .4;
     }
+
+    public static Integer determineFloor(Double floor) {
+        return (int)Math.round(floor);
+    }
 }
 
 

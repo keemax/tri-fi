@@ -62,14 +62,8 @@ public class Predictor {
     /** Global instance of the JSON factory. */
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
 
-    @Value("${prediction.x.model}")
-    private String xModel;
-
-    @Value("${prediction.y.model}")
-    private String yModel;
-
-    @Value("${prediction.floor.model}")
-    private String floorModel;
+    @Value("${prediction.model}")
+    private String predictionModel;
 
     @Resource(name = "knownRouters")
     private List<String> knownRouters;
@@ -120,9 +114,9 @@ public class Predictor {
                 }
 
                 try {
-                    Double x = Double.valueOf(predict(values, xModel));
-                    Double y = Double.valueOf(predict(values, yModel));
-                    Double floor = Double.valueOf(predict(values, floorModel));
+                    Double x = Double.valueOf(predict(values, "x-" + predictionModel));
+                    Double y = Double.valueOf(predict(values, "y-" + predictionModel));
+                    Double floor = Double.valueOf(predict(values, "floor-" + predictionModel));
 
                     Location location = new Location();
                     location.setHostname(rs.getHostname());
@@ -130,6 +124,8 @@ public class Predictor {
                     location.setX(x);
                     location.setY(y);
                     location.setFloor(floor);
+                    location.setOriginRouterSignature(rs.getId());
+                    location.setOriginModel(predictionModel);
 
                     dynamoDBMapper.save(location);
 
