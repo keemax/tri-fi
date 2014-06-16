@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,8 +61,9 @@ public class UpdateController {
 
     @RequestMapping(value = "/update/model", method = RequestMethod.POST, consumes = "application/json")
     @ResponseBody
-    public String updateModel(@RequestBody Location location) throws IOException, GeneralSecurityException {
-        location.setFloor((double)Math.round(location.getFloor()));
+    public String updateModel(@RequestBody Location location) throws IOException, GeneralSecurityException,
+            URISyntaxException {
+        location.setFloor((double) Math.round(location.getFloor()));
 
         List<RouterSignature> rs = dynamoDBMapper.query(RouterSignature.class,
                 new DynamoDBQueryExpression<RouterSignature>
@@ -89,7 +91,7 @@ public class UpdateController {
     @ResponseBody
     public String predict(@PathVariable("model") String model, @RequestBody RouterSignature routerSignature) throws
             IOException,
-            GeneralSecurityException {
+            GeneralSecurityException, URISyntaxException {
         Map<String, Router> routers = routerSignature.getRouters();
         List<Object> input = new ArrayList<>();
         for (String router : knownRouters) {
