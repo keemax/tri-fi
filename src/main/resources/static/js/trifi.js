@@ -1,7 +1,10 @@
 var employeeList;
 
 $(document).ready(function() {
+    //$( "#tabs" ).tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
+    //$( "#tabs li" ).removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
 
+    DISPLAYEDFLOOR = 4;
     var width = $("#map").width();
     $("#map").height(width * .6985);
 
@@ -40,16 +43,28 @@ function updateLocations() {
         var id = $(this).data("id");
         updateLastLocation(id);
     });
+    updateFloorPeople(DISPLAYEDFLOOR);
 }
 
-function displayLocation(id, x, y)
+function getEmployeeNameFromHost(hostname)
+{
+    var ret="";
+    employeeList.forEach( function(item){
+        if( item.value == hostname) {
+            ret = item.label;
+        }
+    });
+    return ret;
+}
+
+function displayLocation(hostname, x, y)
 {
     var bigOpacity = .1;
-    var smallOpacity = .7;
+    var smallOpacity = .75;
     var smallImg = IMAGES["smallLoc"];
     var bigImg = IMAGES["bigLoc"];
+    var id = hostname.split('.').join('');
 
-    //$("#map").children("." + id).remove();
     var smallTop = Math.round(x / 500 * $("#map").width() - (smallImg.height/2));
     var smallRight = Math.round(y / 350 * $("#map").height() - (smallImg.width/2));
     var bigTop = Math.round(x / 500 * $("#map").width() - (bigImg.height/2));
@@ -71,20 +86,6 @@ function displayLocation(id, x, y)
             );
         }
     } else {
-        //inner circle
-        var $imgSmall = $("<img>", {
-            src: "/images/red_dot.png",
-            class: id,
-            id: id+"SMALL",
-        });
-        $imgSmall.css({
-            "position": "absolute",
-            "right": smallRight,
-            "top": smallTop,
-            "opacity": smallOpacity
-        });
-        $("#map").append($imgSmall);
-
         //outer circle
         var $imgBig = $("<img>", {
             src: "/images/red_circle.png",
@@ -98,7 +99,36 @@ function displayLocation(id, x, y)
             "opacity": bigOpacity
         });
         $("#map").append($imgBig);
+
+        //inner circle
+        var $imgSmall = $("<img>", {
+            src: "/images/red_dot.png",
+            class: id,
+            id: id+"SMALL",
+            title: getEmployeeNameFromHost(hostname)
+        });
+        $imgSmall.css({
+            "position": "absolute",
+            "right": smallRight,
+            "top": smallTop,
+            "opacity": smallOpacity
+        });
+        $("#map").append($imgSmall);
     }
+}
+
+function updateFloorPeople( floor)
+{
+    $.ajax({
+        url: "/location/floor/latest?floor="+floor+"&timeSince="+(1440),
+        dataType: "json",
+        type: "GET"
+    }).done(function(data) {
+        //$("#map").css("background-image", "url(/images/floor_"+Math.round(floor)+"_grid.png)");
+        data.forEach( function(item){
+            displayLocation( item.hostname, item.x, item.y, item.floor);
+        });
+    });
 }
 
 function updateLastLocation(hostname) {
@@ -110,24 +140,17 @@ function updateLastLocation(hostname) {
         dataType: "json",
         type: "GET"
     }).done(function(data) {
-        console.log(data);
-        displayLocation(hostname.split('.').join(''), data.x, data.y);
-        $("#map").css("background-image", "url(/images/floor_"+Math.round(data.floor)+"_grid.png)");
+        displayLocation(hostname, data.x, data.y, data.floor);
     });
 }
 
 function updateEmployeeList() {
-    //var item = {"name":"Max Keener","id":""};
-    /*employeeList = {label:"max keener","value":"12345"};
-    $("#search").prop("disabled", false);*/
     $.ajax({
         url: "/employee/all",
         dataType: "json",
         async: false,
         type: "GET"
     }).done(function(data) {
-        console.log("got employee list");
-        console.log( data);
         employeeList = $.map(data, function(item) {
             return { label: item.realname, value: item.hostname};
         });
