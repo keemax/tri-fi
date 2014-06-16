@@ -27,6 +27,7 @@ $(document).ready(function() {
         event.preventDefault();
         $("#search").val("");
         $("#following").append("<li class=\"following\" data-realname=\"" + ui.item.label + "\" data-id=\"" + ui.item.value + "\"><a class=\"remove\">x</a><span>" + ui.item.label +"</span></li>");
+        updateLastLocation(ui.item.value);
     });
 
     // set up click handler for x's by employee names
