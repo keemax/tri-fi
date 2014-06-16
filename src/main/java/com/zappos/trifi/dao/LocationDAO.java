@@ -136,7 +136,22 @@ public class LocationDAO {
                         (timeToLookBack), TriFiUtils.getTimestamp());
         List<Location> latestLocationsForFloor = new ArrayList<>();
         Set<String> seenHosts = new HashSet<>();
+
+
+        List<Location> regularListUgh = new ArrayList<>();
         for(Location l : timeSinceLocations) {
+            regularListUgh.add(l);
+        }
+
+        Collections.sort(regularListUgh, new Comparator<Location>() {
+            @Override
+            public int compare(Location o1, Location o2) {
+                return o2.getTimestamp().compareTo(o1.getTimestamp());
+            }
+        });
+
+
+        for(Location l : regularListUgh) {
             if (TriFiUtils.isFloorEqual(l.getFloor(), dFloor)) {
                 if (!seenHosts.contains(l.getHostname())) {
                     seenHosts.add(l.getHostname());
