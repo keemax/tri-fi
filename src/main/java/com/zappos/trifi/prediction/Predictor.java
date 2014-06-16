@@ -9,19 +9,22 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.prediction.Prediction;
 import com.google.api.services.prediction.PredictionScopes;
 import com.google.api.services.prediction.model.Input;
+import com.google.api.services.prediction.model.Insert2;
 import com.google.api.services.prediction.model.Output;
+
+import com.google.api.services.prediction.model.Update;
 import com.google.appengine.repackaged.com.google.common.collect.Queues;
 import com.google.common.io.Files;
 import com.zappos.trifi.model.Location;
 import com.zappos.trifi.model.Router;
 import com.zappos.trifi.model.RouterSignature;
+import com.zappos.trifi.model.TrainingSignature;
 import com.zappos.trifi.util.TriFiConstants;
 import com.zappos.trifi.util.TriFiUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -107,6 +110,9 @@ public class Predictor {
             // Pull the next RouterSignature from the queue. If there are none, die for a short while.
             while (null != (rs = signatureQueue.poll())) {
                 Map<String, Router> routers = rs.getRouters();
+                if(routers.size() == 0) {
+                    continue;
+                }
                 List<Object> values = new ArrayList<>();
 
                 for(String router : knownRouters) {
@@ -170,31 +176,86 @@ public class Predictor {
         return output.getOutputValue();
     }
 
-//    public String insertPrediction() throws IOException, GeneralSecurityException {
-//        httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-//        // check for valid setup
-//        if (serviceAccountEmail.startsWith("Enter ")) {
-//            System.err.println(serviceAccountEmail);
-//            System.exit(1);
+    public String updateModel(TrainingSignature trainingSignature) throws IOException, GeneralSecurityException {
+        httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+        // check for valid setup
+        if (serviceAccountEmail.startsWith("Enter ")) {
+            System.err.println(serviceAccountEmail);
+            System.exit(1);
+        }
+        String p12Content = Files.readFirstLine(new File("key.p12"), Charset.defaultCharset());
+        if (p12Content.startsWith("Please")) {
+            System.err.println(p12Content);
+            System.exit(1);
+        }
+        // service account credential (uncomment setServiceAccountUser for domain-wide delegation)
+        GoogleCredential credential = new GoogleCredential.Builder().setTransport(httpTransport)
+                .setJsonFactory(JSON_FACTORY)
+                .setServiceAccountId(serviceAccountEmail)
+                .setServiceAccountScopes(Collections.singleton(PredictionScopes.PREDICTION))
+                .setServiceAccountPrivateKeyFromP12File(new File("key.p12"))
+                .build();
+
+
+        Prediction prediction = new Prediction.Builder(httpTransport, JSON_FACTORY, credential)
+                .setApplicationName(TriFiConstants.GOOGLE_APP_NAME).build();
+
+        Update xUpdate = new Update();
+        xUpdate.setCsvInstance(getCSVInstance(trainingSignature, "X"));
+        xUpdate.setOutput(String.valueOf(Math.round(trainingSignature.getX())));
+        prediction.trainedmodels().update("tri-fi", "x-" + trainingSignature.getVersion(),
+                xUpdate).execute();
+
+        Update yUpdate = new Update();
+        yUpdate.setCsvInstance(getCSVInstance(trainingSignature, "Y"));
+        yUpdate.setOutput(String.valueOf(Math.round(trainingSignature.getY())));
+        prediction.trainedmodels().update("tri-fi", "y-" + trainingSignature.getVersion(),
+                yUpdate).execute();
+
+        Update fUpdate = new Update();
+        fUpdate.setCsvInstance(getCSVInstance(trainingSignature, "Floor"));
+        fUpdate.setOutput(String.valueOf(Math.round(trainingSignature.getFloor())));
+        prediction.trainedmodels().update("tri-fi", "floor-" + trainingSignature.getVersion(),
+                fUpdate).execute();
+
+
+//        Prediction.Trainedmodels.Update xoutput = prediction.trainedmodels().update("tri-fi",
+//                "x-" + trainingSignature.getVersion(),
+//                new Update().setCsvInstance(getCSVInstance(trainingSignature, "X")));
+//        Prediction.Trainedmodels.Update youtput = prediction.trainedmodels().update("tri-fi",
+//                "y-" + trainingSignature.getVersion(),
+//                new Update().setCsvInstance());
+//        Prediction.Trainedmodels.Update flooroutput = prediction.trainedmodels().update("tri-fi",
+//                "floor-" + trainingSignature.getVersion(),
+//                new Update().setCsvInstance(getCSVInstance(trainingSignature, "Floor")));
+//
+//        Insert2 xi = xoutput.execute();
+//        Insert2 yi = youtput.execute();
+//        Insert2 fi = flooroutput.execute();
+
+
+        return "true";
+    }
+
+    private List<Object> getCSVInstance(TrainingSignature trainingSignature, String dimension) {
+        List<Object> csvInstance = new ArrayList<>();
+//        switch (dimension) {
+//            case "X":
+//                csvInstance.add(Math.round(trainingSignature.getX()));
+//                break;
+//            case "Y":
+//                csvInstance.add(Math.round(trainingSignature.getY()));
+//                break;
+//            case "Floor":
+//                csvInstance.add(Math.round(trainingSignature.getFloor()));
+//                break;
 //        }
-//        String p12Content = Files.readFirstLine(new File("key.p12"), Charset.defaultCharset());
-//        if (p12Content.startsWith("Please")) {
-//            System.err.println(p12Content);
-//            System.exit(1);
-//        }
-//        // service account credential (uncomment setServiceAccountUser for domain-wide delegation)
-//        GoogleCredential credential = new GoogleCredential.Builder().setTransport(httpTransport)
-//                .setJsonFactory(JSON_FACTORY)
-//                .setServiceAccountId(serviceAccountEmail)
-//                .setServiceAccountScopes(Collections.singleton(PredictionScopes.PREDICTION))
-//                .setServiceAccountPrivateKeyFromP12File(new File("key.p12"))
-//                .build();
-//
-//
-//        Prediction prediction = new Prediction.Builder(httpTransport, JSON_FACTORY, credential)
-//                .setApplicationName(TriFiConstants.GOOGLE_APP_NAME).build();
-//
-//        prediction.trainedmodels().update()
-//    }
+
+        Map<String, Router> routers = trainingSignature.getRouterSignature().getRouters();
+        for(String router : knownRouters) {
+            csvInstance.add(TriFiUtils.getSignalStrength(routers.get(router)));
+        }
+        return csvInstance;
+    }
 
 }

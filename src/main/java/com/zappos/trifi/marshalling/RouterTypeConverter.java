@@ -2,6 +2,7 @@ package com.zappos.trifi.marshalling;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zappos.trifi.model.Router;
 
@@ -12,7 +13,7 @@ import java.util.Map;
  * Simple {@link com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshaller} to convert the {@link com.zappos
  * .model.RouterSignature} objects to and from {@code JSON}.
  */
-public class RouterDescriptionTypeConverter implements DynamoDBMarshaller<Map<String, Router> > {
+public class RouterTypeConverter implements DynamoDBMarshaller<Map<String, Router> > {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -29,7 +30,7 @@ public class RouterDescriptionTypeConverter implements DynamoDBMarshaller<Map<St
     @Override
     public Map<String, Router>  unmarshall(Class<Map<String, Router> > clazz, String obj) {
         try {
-            return mapper.readValue(obj, clazz);
+            return mapper.readValue(obj, new TypeReference<Map<String, Router>>() { });
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -59,6 +59,8 @@ public class TrainingDAO {
 
 
 
+
+
     public void storeFloor(TrainingUpdate update) {
         storeTrainingExample("floor",
                 update.getLocation().getFloor().doubleValue(),

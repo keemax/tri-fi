@@ -1,5 +1,7 @@
 var employeeList;
 
+var locationMap = {};
+
 $(document).ready(function() {
 
     var width = $("#map").width();
@@ -21,7 +23,7 @@ $(document).ready(function() {
     $("#search").on("autocompleteselect", function(event, ui) {
         event.preventDefault();
         $("#search").val("");
-        $("#following").append("<li class=\"following\" data-id=\"" + ui.item.value + "\"><a class=\"remove\">x</a><span>" + ui.item.label +"</span></li>");
+        $("#following").append("<li class=\"following\" data-realname=\"" + ui.item.label + "\" data-id=\"" + ui.item.value + "\"><a class=\"remove\">x</a><span>" + ui.item.label +"</span></li>");
     });
 
     // set up click handler for x's by employee names
@@ -31,7 +33,7 @@ $(document).ready(function() {
         parentLi.remove();
     });
 
-    setInterval("updateLocations()", 5000);
+    setInterval("updateLocations()", 10000);
 
 });
 
@@ -41,6 +43,75 @@ function updateLocations() {
         updateLastLocation(id);
     });
 }
+
+$(document).ready(function() {
+    $("#map").click(function(e){
+        var offset = $(this).offset();
+        var PosX = e.clientX + document.body.scrollLeft
+            + document.documentElement.scrollLeft - offset.left;
+        var PosY = e.clientY + document.body.scrollTop
+            + document.documentElement.scrollTop - offset.top;
+
+        var mapWidth = $("#map").width();
+        var mapHeight = $("#map").height();
+
+        var scaleY = Math.round(((mapWidth - PosX) / mapWidth) * 500);
+        var scaleX = Math.round((PosY / mapHeight) * 350);
+
+
+        var followingList = $(".following");
+        if( followingList.size() > 1 ||  followingList.size() == 0) {
+            console.log("Must have 1 person being followed to train, and that person must be you!");
+            return;
+        }
+
+        var element = followingList[0];
+
+        var realname = element.getAttribute("data-realname");
+        var hostname = element.getAttribute("data-id");
+
+
+
+        var targetId = hostname.split('.').join('')
+
+        var lastLocation = locationMap["\"" + targetId + "\""];
+
+        console.log(lastLocation);
+
+
+        var r = confirm("It looks like you clicked at (" + scaleX + ", " + scaleY + "). The system recorded you at (" + Math.round(lastLocation.x) +
+            ", " + Math.round(lastLocation.y) + ") Are you " + realname + "And do you want to update the model: " + lastLocation.originModel);
+        if (r==true) {
+            jQuery.ajax ({
+                url: "/update/model",
+                type: "POST",
+                data: JSON.stringify(
+                    {
+                        hostname: lastLocation.hostname,
+                        timestamp: lastLocation.timestamp,
+                        x: scaleX,
+                        y: scaleY,
+                        floor: lastLocation.floor,
+                        originRouterSignature:lastLocation.originRouterSignature,
+                        originModel: lastLocation.originModel
+                    }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function(){
+                    //
+                }
+            });
+        } else {
+
+        }
+    });
+});
+
+
+
+
+
+
 
 function displayLocation(id, x, y)
 {
@@ -75,7 +146,7 @@ function displayLocation(id, x, y)
         var $imgSmall = $("<img>", {
             src: "/images/red_dot.png",
             class: id,
-            id: id+"SMALL",
+            id: id+"SMALL"            
         });
         $imgSmall.css({
             "position": "absolute",
@@ -106,11 +177,12 @@ function updateLastLocation(hostname) {
     var imgHeight = 15;
 
     $.ajax({
-        url: "/location/last?hostname=" + hostname,
+        url: "/location/latest/average?hostname=" + hostname,
         dataType: "json",
         type: "GET"
     }).done(function(data) {
         console.log(data);
+        locationMap["\"" + hostname.split('.').join('') + "\""] = data;
         displayLocation(hostname.split('.').join(''), data.x, data.y);
         $("#map").css("background-image", "url(/images/floor_"+Math.round(data.floor)+"_grid.png)");
     });

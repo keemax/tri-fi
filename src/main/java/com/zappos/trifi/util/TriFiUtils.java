@@ -10,6 +10,7 @@ import org.apache.commons.lang3.time.FastDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -24,8 +25,8 @@ public class TriFiUtils {
      * 10 ^ ((27.55 - (20 * log10(5825)) - (-87))/20)
      */
     public static Double getSignalStrength(Router router) {
-        return router == null ? DEFAULT_NETWORK :  Math.pow(10,((27.55 - (20 * Math.log10(router
-                .getFreq())) - router.getStrength()) / 20));
+        return router == null ? DEFAULT_NETWORK :  Math.round((Math.pow(10,((27.55 - (20 * Math.log10(router
+                .getFreq())) - router.getStrength()) / 20))) * 1000.0) / 1000.0;
     }
 
     public static Double getDimensionValue(Location location, String dimension) {
@@ -38,7 +39,7 @@ public class TriFiUtils {
                 return location.getY();
             case "floor":
             case "Floor":
-                return location.getFloor();
+                return (double)Math.round(location.getFloor());
         }
         return null;
     }

@@ -53,6 +53,11 @@ public class LocationController {
         return locationDAO.getLatestLocationsForFloor(floor, timeSince);
     }
 
+    @RequestMapping("/location/latest/average")
+    public Location getLastestAverageLocationForHost(@RequestParam("hostname") String hostname) {
+        return locationDAO.getAvgLatestLocationForHost(hostname);
+    }
+
     @RequestMapping("/location/last")
     public Location findPersonsLastLocation(@RequestParam("hostname") String hostname) {
         return locationDAO.getLatestLocationForHost(hostname);

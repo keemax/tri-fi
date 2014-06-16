@@ -1,8 +1,11 @@
 package com.zappos.trifi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  *
  */
+@JsonIgnoreProperties
 public class Router {
     private Double strength;
     private Double freq = 3750.0;   // default

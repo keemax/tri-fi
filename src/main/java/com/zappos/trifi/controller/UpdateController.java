@@ -1,8 +1,11 @@
 package com.zappos.trifi.controller;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.zappos.trifi.model.Location;
 import com.zappos.trifi.model.Router;
 import com.zappos.trifi.model.RouterSignature;
+import com.zappos.trifi.model.TrainingSignature;
 import com.zappos.trifi.prediction.Predictor;
 import com.zappos.trifi.util.TriFiUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +56,33 @@ public class UpdateController {
 
         // Return awesome job, you win.
         return "sweet request bro";
+    }
+
+    @RequestMapping(value = "/update/model", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public String updateModel(@RequestBody Location location) throws IOException, GeneralSecurityException {
+        location.setFloor((double)Math.round(location.getFloor()));
+
+        List<RouterSignature> rs = dynamoDBMapper.query(RouterSignature.class,
+                new DynamoDBQueryExpression<RouterSignature>
+                ().withHashKeyValues(new RouterSignature().withId(location.getOriginRouterSignature())));
+
+        if(rs.size() != 1) {
+            return "ouch sukah! 1 RouterSignature not returned from Dynamo, or whatever.";
+        }
+
+        TrainingSignature ts = new TrainingSignature();
+        ts.setRouterSignature(rs.get(0));
+        ts.setVersion(location.getOriginModel());
+        ts.setLocation(location);
+        ts.setX(location.getX());
+        ts.setY(location.getY());
+        ts.setFloor(location.getFloor());
+
+        dynamoDBMapper.save(ts);
+
+        return predictor.updateModel(ts);
+        //return "done and done.";
     }
 
     @RequestMapping("/predict/{model}")

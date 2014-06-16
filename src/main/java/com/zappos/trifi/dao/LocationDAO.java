@@ -50,6 +50,69 @@ public class LocationDAO {
         return rval.getTimestamp().equals(BEGINNING_OF_TIME) ? null : rval;
     }
 
+    public Location getAvgLatestLocationForHost(String hostname) {
+
+
+        List<Location> recentLocations = getAllLocationsForHostInRange(hostname, TriFiUtils.getTimestampMinutesBefore
+                        (5),
+                TriFiUtils.getTimestamp());
+
+        if(recentLocations.size() < 1) {
+            return null;
+        }
+
+        List<Location> regularListUgh = new ArrayList<>();
+        for(Location l : recentLocations) {
+            regularListUgh.add(l);
+        }
+
+        Collections.sort(regularListUgh, new Comparator<Location>() {
+            @Override
+            public int compare(Location o1, Location o2) {
+                return o2.getTimestamp().compareTo(o1.getTimestamp());
+            }
+        });
+
+        Double x = 0.0;
+        Double y = 0.0;
+        Double floor = 0.0;
+
+        Double restrictedFloor = regularListUgh.get(0).getFloor();
+
+        int cnt = 0;
+
+        for(Location l : regularListUgh) {
+            if(TriFiUtils.isFloorEqual(l.getFloor(), restrictedFloor)) {
+                System.out.println("Using x: " + l.getX() + " y: " + l.getY() + " f: " + l.getFloor() + " T: " + l
+                        .getTimestamp
+                        ());
+                x += l.getX();
+                y += l.getY();
+                floor += l.getFloor();
+                cnt++;
+                if(cnt > 3) {
+                    break;
+                }
+            }
+        }
+
+        System.out.println();
+        x /= cnt;
+        y /= cnt;
+        floor /= cnt;
+
+        Location rval = new Location();
+        rval.setOriginRouterSignature(regularListUgh.get(0).getOriginRouterSignature());
+        rval.setOriginModel(regularListUgh.get(0).getOriginModel());
+        rval.setHostname(regularListUgh.get(0).getHostname());
+        rval.setTimestamp(regularListUgh.get(0).getTimestamp());
+        rval.setX(x);
+        rval.setY(y);
+        rval.setFloor(floor);
+
+        return rval;
+    }
+
     public List<Location> getAllLocationsForHost(String hostname) {
         return dynamoDBMapper.query(Location.class, new DynamoDBQueryExpression<Location>().withHashKeyValues(new
                 Location()
