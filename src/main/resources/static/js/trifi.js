@@ -112,11 +112,6 @@ $(document).ready(function() {
 });
 
 
-
-
-
-
-
 function getEmployeeNameFromHost(hostname)
 {
     var ret="";
@@ -197,7 +192,7 @@ function updateFloorPeople( floor)
     }).done(function(data) {
         //$("#map").css("background-image", "url(/images/floor_"+Math.round(floor)+"_grid.png)");
         data.forEach( function(item){
-            displayLocation( item.hostname, item.x, item.y, item.floor);
+//            displayLocation( item.hostname, item.x, item.y, item.floor);
         });
     });
 }
@@ -213,9 +208,8 @@ function updateLastLocation(hostname) {
     }).done(function(data) {
         console.log(data);
         locationMap["\"" + hostname.split('.').join('') + "\""] = data;
-        displayLocation(hostname.split('.').join(''), data.x, data.y);
-        $("#map").css("background-image", "url(/images/floor_"+Math.round(data.floor)+"_grid.png)");
-        displayLocation(hostname, data.x, data.y, data.floor);
+        displayLocation(hostname, data.x, data.y);
+        //$("#map").css("background-image", "url(/images/floor_"+Math.round(data.floor)+"_grid.png)");
     });
 }
 
