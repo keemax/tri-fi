@@ -36,7 +36,7 @@ $(document).ready(function() {
         parentLi.remove();
     });
 
-    setInterval("updateLocations()", 10000);
+    setInterval("updateLocations()", 15000);
 
 });
 
