@@ -31,6 +31,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -138,20 +139,24 @@ public class Predictor {
                 } catch (IOException | GeneralSecurityException e) {
                     // Log the error and continue without saving to the DB
                     LOG.error(e.getMessage());
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
                 }
 
             }
         }
     }
 
-    public String predict(List<Object> values, String model) throws IOException, GeneralSecurityException {
+    public String predict(List<Object> values, String model) throws IOException, GeneralSecurityException,
+            URISyntaxException {
         httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         // check for valid setup
         if (serviceAccountEmail.startsWith("Enter ")) {
             System.err.println(serviceAccountEmail);
             System.exit(1);
         }
-        String p12Content = Files.readFirstLine(new File("key.p12"), Charset.defaultCharset());
+        String p12Content = Files.readFirstLine(new File(this.getClass().getClassLoader().getResource("key.p12").toURI()),
+                Charset.defaultCharset());
         if (p12Content.startsWith("Please")) {
             System.err.println(p12Content);
             System.exit(1);
@@ -161,7 +166,7 @@ public class Predictor {
                 .setJsonFactory(JSON_FACTORY)
                 .setServiceAccountId(serviceAccountEmail)
                 .setServiceAccountScopes(Collections.singleton(PredictionScopes.PREDICTION))
-                .setServiceAccountPrivateKeyFromP12File(new File("key.p12"))
+                .setServiceAccountPrivateKeyFromP12File(new File(this.getClass().getClassLoader().getResource("key.p12").toURI()))
                 .build();
 
 
@@ -176,14 +181,17 @@ public class Predictor {
         return output.getOutputValue();
     }
 
-    public String updateModel(TrainingSignature trainingSignature) throws IOException, GeneralSecurityException {
+    public String updateModel(TrainingSignature trainingSignature) throws IOException, GeneralSecurityException, URISyntaxException {
         httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         // check for valid setup
         if (serviceAccountEmail.startsWith("Enter ")) {
             System.err.println(serviceAccountEmail);
             System.exit(1);
         }
-        String p12Content = Files.readFirstLine(new File("key.p12"), Charset.defaultCharset());
+
+
+        String p12Content = Files.readFirstLine(new File(this.getClass().getClassLoader().getResource("key.p12").toURI()),
+                Charset.defaultCharset());
         if (p12Content.startsWith("Please")) {
             System.err.println(p12Content);
             System.exit(1);
@@ -193,7 +201,7 @@ public class Predictor {
                 .setJsonFactory(JSON_FACTORY)
                 .setServiceAccountId(serviceAccountEmail)
                 .setServiceAccountScopes(Collections.singleton(PredictionScopes.PREDICTION))
-                .setServiceAccountPrivateKeyFromP12File(new File("key.p12"))
+                .setServiceAccountPrivateKeyFromP12File(new File(this.getClass().getClassLoader().getResource("key.p12").toURI()))
                 .build();
 
 
